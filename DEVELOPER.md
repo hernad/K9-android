@@ -1,7 +1,6 @@
 # K9 email za bring.out korisnike
 
 
-
 ## build:
 
 
@@ -17,17 +16,16 @@
 
 ## Push na google playstore
 
-       ./k9mail/build/outputs/apk/k9mail-release-unsigned.apk
+
+build bosanska verziju:
+
+        tools/build_only_bosanski.sh
 
 
+potpisivanje .apk:
 
-       cd k9mail/build/outputs/apk
+        tools/bringout_sign_apk.sh
 
-       keytool -genkey -v -keystore bringout-android.keystore -alias \
-            "$SIGNING_NAME" -keyalg RSA -keysize 4096
-
-     jarsigner -verbose -keystore bringout-android.keystore \
-      k9mail-release-unsigned.apk "$SIGNING_NAME"
 
 
 
