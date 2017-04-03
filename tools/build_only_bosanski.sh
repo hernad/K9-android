@@ -52,10 +52,9 @@ do
 done
 
 echo "echo iz bs setujem strings.xml"
-cp ./k9mail/src/main/res/values/strings.xml  .
 cp ./k9mail/src/main/res/values-bs/strings.xml  ./k9mail/src/main/res/values/strings.xml
 
-./gradlew build
+./gradlew assembleRelease
 
 mkdir -p k9mail/build/outputs/apk
 cp bringout-android.keystore k9mail/build/outputs/apk/
