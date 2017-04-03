@@ -4,9 +4,9 @@
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
      You may obtain a copy of the License at
-  
+
           http://www.apache.org/licenses/LICENSE-2.0
-  
+
      Unless required by applicable law or agreed to in writing, software
      distributed under the License is distributed on an "AS IS" BASIS,
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@
         When a user starts this process, the email address is parsed, the domain
         broken out and used to search this file for a provider. If one is found the
         provider's settings are used to attempt to connect to the account.
-        
+
         At this time, the id and label attributes are not used.  However, please include them
         if you make edits to this file.  id must also be completely unique.  label will be shown
         to the user when there are multiple options provided for a single domain (not currently
@@ -65,11 +65,11 @@
             $email - the email address the user entered
             $user - the value before the @ sign in the email address the user entered
             $domain - the value after the @ sign in the email address the user entered
-            
+
         The username attribute MUST be specified for the incoming element, so the POP3 or IMAP
         server can identify the mailbox to be opened.
-        
-        The username attribute MAY be the empty string for the outgoing element, but only if the 
+
+        The username attribute MAY be the empty string for the outgoing element, but only if the
         SMTP server supports anonymous transmission (most don't).
 
         While it would technically work please DO NOT add providers that don't support encrypted
@@ -104,7 +104,7 @@
     <provider id="cox" label="Cox" domain="cox.net">
         <incoming uri="pop3+ssl+://pop.east.cox.net" username="$user" />
         <outgoing uri="smtp+ssl+://smtp.east.cox.net" username="$user" />
-    </provider> 
+    </provider>
     <provider id="live" label="Windows Live Hotmail" domain="live.com">
         <incoming uri="imap+ssl+://imap-mail.outlook.com"  username="$email" />
         <outgoing uri="smtp+tls+://smtp-mail.outlook.com" username="$email" />
@@ -233,7 +233,7 @@
         <incoming uri="imap+ssl+://imap.mail.yahoo.com" username="$email" />
         <outgoing uri="smtp+ssl+://smtp.mail.yahoo.com" username="$email" />
     </provider>
-    
+
     <!-- Apple -->
     <provider id="apple" label="Apple" domain="apple.com">
         <incoming uri="imap+ssl+://imap.mail.apple.com" username="$user" />
@@ -292,7 +292,7 @@
         <incoming uri="imap+ssl+://imap.virginmedia.com" username="$email" />
         <outgoing uri="smtp+ssl+://smtp.virginmedia.com" username="$email" />
     </provider>
-    
+
     <!-- Germany -->
     <provider id="mailbox.org" label="mailbox.org" domain="mailbox.org">
         <incoming uri="imap+tls+://imap.mailbox.org" username="$email" />
@@ -313,7 +313,7 @@
     <provider id="posteo" label="Posteo" domain="posteo.net">
         <incoming uri="imap+tls+://posteo.de" username="$email" />
         <outgoing uri="smtp+tls+://posteo.de" username="$email" />
-    </provider>    
+    </provider>
     <provider id="posteo" label="Posteo" domain="posteo.de">
         <incoming uri="imap+tls+://posteo.de" username="$email" />
         <outgoing uri="smtp+tls+://posteo.de" username="$email" />
@@ -358,11 +358,11 @@
    <provider id="poste" label="poste" domain="poste.it">
         <incoming uri="imap+ssl+://relay.poste.it" username="$email" />
         <outgoing uri="smtp+ssl+://relay.poste.it" username="$email" />
-   </provider> 
+   </provider>
    <provider id="vodafone" label="vodafone" domain="vodafone.it">
         <incoming uri="imap+ssl+://imap.vodafone.it" username="$email" />
         <outgoing uri="smtp+ssl+://smtp.vodafone.it" username="$email" />
-   </provider> 
+   </provider>
 
    <!-- Switzerland -->
     <!-- KolabNow.com variants -->
@@ -484,7 +484,7 @@
         <incoming uri="imap+ssl+://imap.hanmail.net"  username="$user" />
         <outgoing uri="smtp+ssl+://smtp.hanmail.net" username="$user" />
     </provider>
-    
+
    <!-- Russia -->
     <!-- Mail.Ru variants -->
     <provider id="rumailmailimap" label="mail.ru" domain="mail.ru">
@@ -644,7 +644,7 @@
         <incoming uri="imap+ssl+://imap-mail.outlook.com"  username="$email" />
         <outgoing uri="smtp+tls+://smtp-mail.outlook.com" username="$email" />
     </provider>
-    
+
     <!-- The Netherlands -->
     <!-- Ziggo variants -->
     <provider id="casema.nl" label="Ziggo" domain="casema.nl">
@@ -709,7 +709,7 @@
         <incoming uri="imap+ssl+://mail.fairnatics.net" username="$email" />
         <outgoing uri="smtp+tls+://mail.fairnatics.net:25" username="$email" />
     </provider>
-    
+
     <!-- Developers' vanity providers -->
     <provider id="fsck.com" label="Jesse's personal mail" domain="fsck.com" >
         <incoming uri="imap+ssl+://fsck.com"  username="$user" />
@@ -719,4 +719,13 @@
         <incoming uri="imap+ssl+://imap.bestpractical.com"  username="$user" />
         <outgoing uri="smtp+tls+://smtp.bestpractical.com:2525" />
     </provider>
+
+
+    <!-- bring.out -->
+    <provider id="bring.out" label="bring.out email" domain="out.ba" >
+        <incoming uri="imap+ssl+://mail.bring.out.ba"  username="$email" />
+        <outgoing uri="smtp+tls+://mail.bring.out.ba" username="$email" />
+    </provider>
+
+
 </providers>

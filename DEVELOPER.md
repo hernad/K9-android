@@ -87,3 +87,11 @@ The signer certificate will expire within six months.
 No -tsa or -tsacert is provided and this jar is not timestamped. Without a timestamp, users may not be able to validate this jar after the signer certificate's expiration date (2017-07-02) or after any future revocation date.
 
 </pre>
+
+
+
+
+
+
+ls -lh ./k9mail/build/outputs/apk/bringout-android.keystore
+
