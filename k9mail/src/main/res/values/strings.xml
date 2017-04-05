@@ -659,7 +659,7 @@
   <string name="flagged_modifier"> - Označeno zastavicom</string>
   <string name="unread_modifier">- Nepročitano</string>
   <string name="search_all_messages_title">Sve poruke</string>
-  <string name="search_all_messages_detail">Sve poruke uključene u mape pretraživanja</string>
+  <string name="search_all_messages_detail">Poruke iz svih foldera koji se pretražuju</string>
   <string name="integrated_inbox_title">Objedinjena ulazna pošta</string>
   <string name="integrated_inbox_detail">Sve poruke u zajedničkom inboxu</string>
   <string name="folder_settings_include_in_integrated_inbox_label">Spoji</string>
