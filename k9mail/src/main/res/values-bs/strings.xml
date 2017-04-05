@@ -13,9 +13,9 @@
   <string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>
   <string name="app_license">Licencirano pod Apache License, Version 2.0.</string>
   <!--Welcome message-->
-  <string name="welcome_message_title">Dobrodošli u K-9 Mail</string>
+  <string name="welcome_message_title">Dobrodošli u K9 bring.out email</string>
   <!--Default signature-->
-  <string name="default_signature">-- \nPoslano sa mog telefona.</string>
+  <string name="default_signature">-- \nPoslano sa mog telefona via K9 bring.out email</string>
   <!--General strings that include the app name-->
   <string name="account_delete_dlg_instructions_fmt">Račun \"<xliff:g id="account">%s</xliff:g>\" će biti maknut iz K-9 Maila.</string>
   <string name="account_recreate_dlg_instructions_fmt">Svi lokalni podaci za \"<xliff:g id="account">%s</xliff:g>\" biti će obrisani. Postavke računa će biti zadržane.</string>
@@ -129,9 +129,9 @@
   <string name="recreating_account">Ponovo kreiraj račun \"<xliff:g id="account">%s</xliff:g>\"</string>
   <string name="notification_new_title">Nova email</string>
   <plurals name="notification_new_messages_title">
-    <item quantity="one"><xliff:g id="new_message_count">%d</xliff:g> nova poruka</item>
-    <item quantity="few"><xliff:g id="new_message_count">%d</xliff:g> novih poruka</item>
-    <item quantity="other"><xliff:g id="new_message_count">%d</xliff:g> novih poruka</item>
+    <item quantity="one"><xliff:g id="new_message_count">%d</xliff:g> novi email</item>
+    <item quantity="few"><xliff:g id="new_message_count">%d</xliff:g> novi emailovi</item>
+    <item quantity="other"><xliff:g id="new_message_count">%d</xliff:g> novi emailovi</item>
   </plurals>
   <string name="notification_new_one_account_fmt"><xliff:g id="unread_message_count">%d</xliff:g> Nepročitano (<xliff:g id="account">%s</xliff:g>)</string>
   <string name="notification_additional_messages">+ <xliff:g id="additional_messages">%1$d</xliff:g> više na <xliff:g id="account">%2$s</xliff:g></string>
@@ -147,13 +147,13 @@
   <string name="notification_bg_send_ticker">Šaljem poštu: <xliff:g id="account">%s</xliff:g></string>
   <string name="notification_bg_send_title">Slanje pošte</string>
   <string name="notification_bg_title_separator">:</string>
-  <string name="special_mailbox_name_inbox">Dolazna pošta</string>
+  <string name="special_mailbox_name_inbox">Inbox (ulazna pošta)</string>
   <string name="special_mailbox_name_outbox">Odlazna pošta</string>
   <string name="special_mailbox_name_drafts">Skice</string>
   <string name="special_mailbox_name_trash">Smeće</string>
   <string name="special_mailbox_name_sent">Poslano</string>
   <string name="special_mailbox_name_archive">Arhiva</string>
-  <string name="special_mailbox_name_spam">Neželjena pošta</string>
+  <string name="special_mailbox_name_spam">Neželjena pošta (SPAM)</string>
   <string name="special_mailbox_name_drafts_fmt"><xliff:g id="folder">%s</xliff:g> (Skice)</string>
   <string name="special_mailbox_name_trash_fmt"><xliff:g id="folder">%s</xliff:g> (Smeće)</string>
   <string name="special_mailbox_name_sent_fmt"><xliff:g id="folder">%s</xliff:g> (Poslano)</string>
