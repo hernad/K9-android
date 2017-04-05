@@ -1,5 +1,7 @@
 #!/bin/bash
 
+APK_DIR=k9mail/build/outputs/apk
+
 ./gradlew clean
 
 rm -rf build
@@ -54,12 +56,18 @@ done
 echo "echo iz bs setujem strings.xml"
 cp ./k9mail/src/main/res/values-bs/strings.xml  ./k9mail/src/main/res/values/strings.xml
 
-./gradlew assembleRelease
+if [ x$1 == xDEBUG ]
+then
+  ./gradlew assembleDebug
+   cp $APK_DIR/k9mail-debug.apk .
 
-mkdir -p k9mail/build/outputs/apk
-cp bringout-android.keystore k9mail/build/outputs/apk/
+else
+  ./gradlew assembleRelease
+  #mkdir -p 
+  cp bringout-android.keystore ${APK_DIR}/
+fi
 
 
 
-echo "uraditi 'git checkout -f' da se vrate jezici"
+#echo "uraditi 'git checkout -f' da se vrate jezici"
 

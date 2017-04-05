@@ -154,11 +154,11 @@
   <string name="special_mailbox_name_sent">Sent (poslane poruke)</string>
   <string name="special_mailbox_name_archive">Arhiva</string>
   <string name="special_mailbox_name_spam">Neželjena pošta (SPAM)</string>
-  <string name="special_mailbox_name_drafts_fmt"><xliff:g id="folder">%s</xliff:g> (priprema)</string>
-  <string name="special_mailbox_name_trash_fmt"><xliff:g id="folder">%s</xliff:g> (smeće)</string>
-  <string name="special_mailbox_name_sent_fmt"><xliff:g id="folder">%s</xliff:g> (poslano)</string>
-  <string name="special_mailbox_name_archive_fmt"><xliff:g id="folder">%s</xliff:g> (Arhiva)</string>
-  <string name="special_mailbox_name_spam_fmt"><xliff:g id="folder">%s</xliff:g> (Neželjena pošta)</string>
+  <string name="special_mailbox_name_drafts_fmt"><xliff:g id="folder">%s</xliff:g> (drafts)</string>
+  <string name="special_mailbox_name_trash_fmt"><xliff:g id="folder">%s</xliff:g> (trash)</string>
+  <string name="special_mailbox_name_sent_fmt"><xliff:g id="folder">%s</xliff:g> (sent)</string>
+  <string name="special_mailbox_name_archive_fmt"><xliff:g id="folder">%s</xliff:g> (arhiva)</string>
+  <string name="special_mailbox_name_spam_fmt"><xliff:g id="folder">%s</xliff:g> (SPAM)</string>
   <string name="send_failure_subject">Slanje nekih poruka nije uspjelo</string>
   <string name="debug_version_fmt">Inačica: <xliff:g id="version">%s</xliff:g></string>
   <string name="debug_enable_debug_logging_title">Omogući zapisnik ispravljanja</string>
@@ -310,7 +310,7 @@
   <string name="account_setup_expunge_policy_manual">Ručno</string>
   <string name="account_setup_incoming_autodetect_namespace_label">Automatsko otkrivanje IMAP naziva prostora</string>
   <string name="account_setup_incoming_imap_path_prefix_label">IMAP prefiks putanje</string>
-  <string name="drafts_folder_label">Folder skice (drafts)</string>
+  <string name="drafts_folder_label">Folder priprema (drafts)</string>
   <string name="sent_folder_label">Folder poslano (sent)</string>
   <string name="trash_folder_label">Folder smeće (trash)</string>
   <string name="archive_folder_label">Folder arhiva</string>
@@ -847,9 +847,9 @@
   <string name="global_settings_messageview_visible_refile_actions_summary">Prikaži odabrane radnje u izborniku pregleda poruke</string>
   <string name="loading_attachment">Učitavam privitak…</string>
   <string name="fetching_attachment_dialog_title_send">Slaje poruke</string>
-  <string name="fetching_attachment_dialog_title_save">Spremanje skice</string>
-  <string name="fetching_attachment_dialog_message">Dohvaćanje privitka…</string>
-  <string name="auth_external_error">Ne mogu identificirati. Poslužitelj ne oglašava SASL VANJSKU sposobnost. To može biti problem sa certifikatom klijenta (istekao, nepoznat izdavatelj certifikata) ili neki drugi konfiguracijski problem.</string>
+  <string name="fetching_attachment_dialog_title_save">Snimanje pripreme</string>
+  <string name="fetching_attachment_dialog_message">Učitavanje priloga…</string>
+  <string name="auth_external_error">Ne mogu identificirati. Server ne prijavljuje SASL pristup. To može biti problem sa certifikatom klijenta (istekao, nepoznat izdavatelj certifikata) ili neki drugi konfiguracijski problem.</string>
   <!--=== OpenPGP specific ==================================================================-->
   <string name="openpgp_unknown_error">Nepoznata Greška OvorenogPGP-a</string>
   <string name="openpgp_canceled_by_user">Otkazano od korisnika</string>

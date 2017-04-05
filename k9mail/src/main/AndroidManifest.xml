@@ -220,33 +220,36 @@
             </intent-filter>
         </activity>
 
+<!--
+   http://stackoverflow.com/questions/6796059/android-intent-filter-to-listen-for-sent-email-addresses
+
+-->
         <activity
             android:name=".activity.MessageCompose"
             android:configChanges="locale"
             android:enabled="false"
             android:label="@string/app_name">
+
             <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
                 <action android:name="android.intent.action.SENDTO"/>
                 <data android:scheme="mailto"/>
                 <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
             </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.SEND"/>
                 <data android:mimeType="*/*"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.SEND_MULTIPLE"/>
                 <data android:mimeType="*/*"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <data android:scheme="mailto"/>
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-            </intent-filter>
         </activity>
 
         <!-- Search Activity - searchable -->
