@@ -18,7 +18,7 @@
                     <action android:name="android.intent.action.VIEW" />
                     <category android:name="android.intent.category.DEFAULT" />
                     <data android:scheme="file" />
-                    <data android:pathPattern=".*\\.mrz" />
+                    <data android:pathPattern=".*\\.eml" />
     </intent-filter>
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
