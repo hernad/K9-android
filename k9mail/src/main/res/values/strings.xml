@@ -188,7 +188,7 @@
   <string name="message_to_label">Za:</string>
   <string name="message_view_cc_label">Cc:</string>
   <string name="message_view_attachment_view_action">Otvori</string>
-  <string name="message_view_attachment_download_action">Spremi</string>
+  <string name="message_view_attachment_download_action">Snimi</string>
   <string name="message_view_status_attachment_not_saved">Snimanje priloga na SD karticu nije moguće.</string>
   <string name="message_view_show_pictures_action">Prikaži slike</string>
   <string name="message_view_show_more_attachments_action">Više…</string>
@@ -703,8 +703,8 @@
   <string name="font_size_larger">Veća</string>
   <string name="miscellaneous_preferences">Razna</string>
   <string name="error_activity_not_found">Nema prikladne aplikacije za ovu radnju.</string>
-  <string name="save_or_discard_draft_message_dlg_title">Spremiti predložak poruke?</string>
-  <string name="save_or_discard_draft_message_instructions_fmt">Spremiti ili Odbaciti ovu poruku?</string>
+  <string name="save_or_discard_draft_message_dlg_title">Snimiti poruku u pripremi?</string>
+  <string name="save_or_discard_draft_message_instructions_fmt">Snimiti ili odbaciti ovu poruku?</string>
   <string name="confirm_discard_draft_message_title">Odbaciti poruku?</string>
   <string name="confirm_discard_draft_message">Jeste li sigurni da želite odbaciti ovu poruku?</string>
   <string name="select_text_now">Odaberi tekst za kopiranje..</string>
@@ -740,7 +740,7 @@
   <string name="settings_exporting">Izvozim postavke…</string>
   <string name="settings_importing">Uvozim postavke…</string>
   <string name="settings_import_scanning_file">Skeniram datoteku…</string>
-  <string name="settings_export_success">Spremi izvezene postavke u <xliff:g id="filename">%s</xliff:g></string>
+  <string name="settings_export_success">Snimi eksportovane postavke u <xliff:g id="filename">%s</xliff:g></string>
   <string name="settings_import_global_settings_success">Uvezene opće postavke iz  <xliff:g id="filename">%s</xliff:g></string>
   <string name="settings_import_success">Uvezeni <xliff:g id="accounts">%s</xliff:g> iz <xliff:g id="filename">%s</xliff:g></string>
   <plurals name="settings_import_accounts">
@@ -771,7 +771,7 @@
   <string name="settings_import_use_incoming_server_password">Koristi lozinku dolaznog servera</string>
   <string name="activate_account_action">Aktiviranje</string>
   <string name="account_unavailable">Račun \"<xliff:g id="account">%s</xliff:g>\" je nedostupan, provjerite pohranu</string>
-  <string name="settings_attachment_default_path">Spremi privitke u…</string>
+  <string name="settings_attachment_default_path">Snimi priloge u…</string>
   <string name="attachment_save_title">Snimi prilog</string>
   <string name="attachment_save_desc">Nije pronađen preglednik fajlova. Gdje želite snimiti ovaj prilog?</string>
   <string name="manage_accounts_move_up_action">Pomakni gore</string>
@@ -795,12 +795,12 @@
   <string name="webview_contextmenu_phone_save_action">Snimi u kontakte</string>
   <string name="webview_contextmenu_phone_copy_action">Kopiraj broj u clipboard</string>
   <string name="webview_contextmenu_phone_clipboard_label">Broj telefona</string>
-  <string name="webview_contextmenu_email_send_action">Pošalji e-poštu</string>
-  <string name="webview_contextmenu_email_save_action">Spremi u Kontakte</string>
+  <string name="webview_contextmenu_email_send_action">Pošalji email</string>
+  <string name="webview_contextmenu_email_save_action">Snimi u kontakte</string>
   <string name="webview_contextmenu_email_copy_action">Kopiraj adresu u clipboard</string>
   <string name="webview_contextmenu_email_clipboard_label">Adresa e-pošte</string>
-  <string name="image_saved_as">Spremi sliku kao \"<xliff:g id="filename">%s</xliff:g>\"</string>
-  <string name="image_saving_failed">Spremanje slike nije uspjelo.</string>
+  <string name="image_saved_as">Snimi sliku kao \"<xliff:g id="filename">%s</xliff:g>\"</string>
+  <string name="image_saving_failed">Snimanje slike nije uspjelo.</string>
   <string name="account_settings_remote_search_num_results_entries_all">Sve</string>
   <string name="account_settings_remote_search_num_results_entries_10">10</string>
   <string name="account_settings_remote_search_num_results_entries_25">25</string>
