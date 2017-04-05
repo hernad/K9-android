@@ -147,16 +147,16 @@
   <string name="notification_bg_send_ticker">Šaljem poštu: <xliff:g id="account">%s</xliff:g></string>
   <string name="notification_bg_send_title">Slanje pošte</string>
   <string name="notification_bg_title_separator">:</string>
-  <string name="special_mailbox_name_inbox">Inbox (ulazna pošta)</string>
-  <string name="special_mailbox_name_outbox">Odlazna pošta</string>
-  <string name="special_mailbox_name_drafts">Skice</string>
-  <string name="special_mailbox_name_trash">Smeće</string>
-  <string name="special_mailbox_name_sent">Poslano</string>
+  <string name="special_mailbox_name_inbox">Inbox (pristigle poruke)</string>
+  <string name="special_mailbox_name_outbox">Outbox (poruke koje se šalju)</string>
+  <string name="special_mailbox_name_drafts">Drafts (poruke u pripremi)</string>
+  <string name="special_mailbox_name_trash">Trash (smeće)</string>
+  <string name="special_mailbox_name_sent">Sent (poslane poruke)</string>
   <string name="special_mailbox_name_archive">Arhiva</string>
   <string name="special_mailbox_name_spam">Neželjena pošta (SPAM)</string>
-  <string name="special_mailbox_name_drafts_fmt"><xliff:g id="folder">%s</xliff:g> (Skice)</string>
-  <string name="special_mailbox_name_trash_fmt"><xliff:g id="folder">%s</xliff:g> (Smeće)</string>
-  <string name="special_mailbox_name_sent_fmt"><xliff:g id="folder">%s</xliff:g> (Poslano)</string>
+  <string name="special_mailbox_name_drafts_fmt"><xliff:g id="folder">%s</xliff:g> (priprema)</string>
+  <string name="special_mailbox_name_trash_fmt"><xliff:g id="folder">%s</xliff:g> (smeće)</string>
+  <string name="special_mailbox_name_sent_fmt"><xliff:g id="folder">%s</xliff:g> (poslano)</string>
   <string name="special_mailbox_name_archive_fmt"><xliff:g id="folder">%s</xliff:g> (Arhiva)</string>
   <string name="special_mailbox_name_spam_fmt"><xliff:g id="folder">%s</xliff:g> (Neželjena pošta)</string>
   <string name="send_failure_subject">Slanje nekih poruka nije uspjelo</string>
@@ -659,7 +659,7 @@
   <string name="flagged_modifier"> - Označeno zastavicom</string>
   <string name="unread_modifier">- Nepročitano</string>
   <string name="search_all_messages_title">Sve poruke</string>
-  <string name="search_all_messages_detail">Sve poruke uključene u mape pretraživanja</string>
+  <string name="search_all_messages_detail">Poruke iz svih foldera koji se pretražuju</string>
   <string name="integrated_inbox_title">Objedinjena ulazna pošta</string>
   <string name="integrated_inbox_detail">Sve poruke u zajedničkom inboxu</string>
   <string name="folder_settings_include_in_integrated_inbox_label">Spoji</string>
