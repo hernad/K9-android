@@ -28,3 +28,4 @@ proguard-project.txt
 .idea/
 *.iml
 .DS_Store
+*.apk
