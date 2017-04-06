@@ -118,15 +118,15 @@
   <string name="status_invalid_id_error">Poruka nije pronađena</string>
   <string name="status_loading_more_failed">pokušaj učitati više poruka</string>
   <string name="load_more_messages_fmt">Učitati
-    za <xliff:g id="messages_to_load">%d</xliff:g> više</string>
+    još <xliff:g id="messages_to_load">%d</xliff:g> poruka</string>
   <string name="abbrev_gigabytes">GB</string>
   <string name="abbrev_megabytes">MB</string>
   <string name="abbrev_kilobytes">KB</string>
   <string name="abbrev_bytes">B</string>
   <string name="account_size_changed">Račun \"<xliff:g id="account">%s</xliff:g>\" smanjeno sa <xliff:g id="oldSize">%s</xliff:g> na <xliff:g id="newSize">%s</xliff:g></string>
-  <string name="compacting_account">Zbijanje računa \"<xliff:g id="account">%s</xliff:g>\"</string>
+  <string name="compacting_account">Pakovanje računa \"<xliff:g id="account">%s</xliff:g>\"</string>
   <string name="clearing_account">Čišćenje računa \"<xliff:g id="account">%s</xliff:g>\"</string>
-  <string name="recreating_account">Ponovo kreiraj račun \"<xliff:g id="account">%s</xliff:g>\"</string>
+  <string name="recreating_account">Ponovo kreirati račun \"<xliff:g id="account">%s</xliff:g>\"</string>
   <string name="notification_new_title">Nova email</string>
   <plurals name="notification_new_messages_title">
     <item quantity="one"><xliff:g id="new_message_count">%d</xliff:g> novi email</item>
@@ -144,8 +144,8 @@
   <string name="notification_certificate_error_text">provjerite postavke vašeg servera</string>
   <string name="notification_bg_sync_ticker">Provjeravam email: <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g></string>
   <string name="notification_bg_sync_title">Provjeravanje emaila</string>
-  <string name="notification_bg_send_ticker">Šaljem poštu: <xliff:g id="account">%s</xliff:g></string>
-  <string name="notification_bg_send_title">Slanje pošte</string>
+  <string name="notification_bg_send_ticker">Šaljem email: <xliff:g id="account">%s</xliff:g></string>
+  <string name="notification_bg_send_title">Slanje emaila</string>
   <string name="notification_bg_title_separator">:</string>
 
   <!-- ovo su nazivi na email serveru, stoga ne prevoditi!  -->
@@ -181,8 +181,8 @@
   <string name="message_compose_quote_header_cc">Cc:</string>
   <string name="message_compose_reply_header_fmt"><xliff:g id="sender">%s</xliff:g> je napisao:</string>
   <string name="message_compose_reply_header_fmt_with_date">Na <xliff:g id="sent_date">%1$s</xliff:g>, <xliff:g id="sender">%2$s</xliff:g> wrote:</string>
-  <string name="message_compose_error_no_recipients">Morate dodati barem jednog primaoca</string>
-  <string name="error_contact_address_not_found">Nije pronađena adrese emaila za ovaj kontakt.</string>
+  <string name="message_compose_error_no_recipients">Morate navesti barem jednog primaoca</string>
+  <string name="error_contact_address_not_found">Nije pronađena email adresa za ovaj kontakt.</string>
   <string name="message_compose_attachments_skipped_toast">Neki prilozi ne mogu biti proslijeđeni zato jer nisu preuzeti.</string>
   <string name="message_compose_show_quoted_text_action">Citat poruke</string>
   <string name="message_compose_description_delete_quoted_text">Skloniti citirani tekst</string>
@@ -195,7 +195,7 @@
   <string name="message_view_status_attachment_not_saved">Snimanje priloga na SD karticu nije moguće.</string>
   <string name="message_view_show_pictures_action">Prikaži slike</string>
   <string name="message_view_show_more_attachments_action">Više…</string>
-  <string name="message_view_no_viewer">Ne mogu pronaći preglednik za <xliff:g id="mimetype">%s</xliff:g>.</string>
+  <string name="message_view_no_viewer">Ne mogu pronaći aplikaciju za pregled <xliff:g id="mimetype">%s</xliff:g>.</string>
   <string name="message_view_download_remainder">Preuzmi cijelu poruku</string>
   <!--NOTE: The following message refers to strings with id account_setup_incoming_save_all_headers_label and account_setup_incoming_title-->
   <string name="message_no_additional_headers_available">Sva zaglavlja su preuzeta, ali nema dodatnih zaglavlja za prikaz.</string>
