@@ -17,7 +17,7 @@
   <!--Default signature-->
   <string name="default_signature">-- \nPoslano sa mog telefona via K9 bring.out email</string>
   <!--General strings that include the app name-->
-  <string name="account_delete_dlg_instructions_fmt">Račun \"<xliff:g id="account">%s</xliff:g>\" će biti maknut iz K-9 Maila.</string>
+  <string name="account_delete_dlg_instructions_fmt">Korisnički račun \"<xliff:g id="account">%s</xliff:g>\" će biti uklonjen iz K9 emaila !?</string>
   <string name="account_recreate_dlg_instructions_fmt">Svi lokalni podaci za \"<xliff:g id="account">%s</xliff:g>\" biti će obrisani. Postavke računa će biti zadržane.</string>
   <string name="account_clear_dlg_instructions_fmt">Lokalne kopije \"<xliff:g id="account">%s</xliff:g>\" biti će izbrisane. Postavke računa biti će sačuvane.</string>
   <!--=== App Store-specific strings =======================================================-->
@@ -35,11 +35,11 @@
   <string name="delete_messages_label">Brisanje E-Pošte</string>
   <string name="delete_messages_desc">Dopušta ovoj aplikaciji brisanje vaših emailova.</string>
   <string name="about_title_fmt">O <xliff:g id="app_name">%s</xliff:g></string>
-  <string name="accounts_title">Računi</string>
+  <string name="accounts_title">Korisnički računi</string>
   <string name="folders_title">Folderi</string>
   <string name="advanced">Napredno</string>
   <string name="message_list_title"><xliff:g id="account">%s</xliff:g>:<xliff:g id="mapa">%s</xliff:g> </string>
-  <string name="compose_title_compose">Sastavi</string>
+  <string name="compose_title_compose">Sastavi email</string>
   <string name="compose_title_reply">Odgovori</string>
   <string name="compose_title_reply_all">Odgovori svima</string>
   <string name="compose_title_forward">Proslijedi</string>
@@ -52,7 +52,7 @@
   <string name="status_next_poll">Sljedeća provjera <xliff:g id="nexttime">%s</xliff:g></string>
   <string name="status_syncing_off">Sinhroniziranje je onemogućeno</string>
   <string name="actionbar_selected"><xliff:g id="selection_count">%d</xliff:g> odabrano</string>
-  <string name="next_action">Sljeedeća</string>
+  <string name="next_action">Dalje</string>
   <string name="previous_action">Prethodna</string>
   <!--Used to confirm acceptance of dialog boxes, warnings, errors, etc.-->
   <string name="okay_action">U redu</string>
@@ -147,13 +147,16 @@
   <string name="notification_bg_send_ticker">Šaljem poštu: <xliff:g id="account">%s</xliff:g></string>
   <string name="notification_bg_send_title">Slanje pošte</string>
   <string name="notification_bg_title_separator">:</string>
-  <string name="special_mailbox_name_inbox">Inbox (pristiglo)</string>
-  <string name="special_mailbox_name_outbox">Outbox (slanje u toku)</string>
-  <string name="special_mailbox_name_drafts">Drafts (u pripremi)</string>
-  <string name="special_mailbox_name_trash">Trash (smeće)</string>
-  <string name="special_mailbox_name_sent">Sent (poslane poruke)</string>
-  <string name="special_mailbox_name_archive">Arhiva</string>
-  <string name="special_mailbox_name_spam">SPAM</string>
+
+  <!-- ovo su nazivi na email serveru, stoga ne prevoditi!  -->
+  <string name="special_mailbox_name_inbox">Inbox</string>
+  <string name="special_mailbox_name_outbox">Outbox</string>
+  <string name="special_mailbox_name_drafts">Drafts</string>
+  <string name="special_mailbox_name_trash">Trash</string>
+  <string name="special_mailbox_name_sent">Sent</string>
+  <string name="special_mailbox_name_archive">Archive</string>
+  <string name="special_mailbox_name_spam">Junk</string>
+
   <string name="special_mailbox_name_drafts_fmt"><xliff:g id="folder">%s</xliff:g></string>
   <string name="special_mailbox_name_trash_fmt"><xliff:g id="folder">%s</xliff:g></string>
   <string name="special_mailbox_name_sent_fmt"><xliff:g id="folder">%s</xliff:g></string>
@@ -838,24 +841,24 @@
   <string name="global_settings_show_contact_picture_label">Prikaži slike kontakata</string>
   <string name="global_settings_show_contact_picture_summary">Prikaži slike kontakata u popisu poruka</string>
   <string name="last_refresh_time_format">Osvježeno <xliff:g id="formatted_time">%s</xliff:g></string>
-  <string name="last_refresh_time_format_with_push">Osvježeno <xliff:g id="time_with_preposition">%s</xliff:g> (Guranje aktivno)</string>
+  <string name="last_refresh_time_format_with_push">Osvježeno <xliff:g id="time_with_preposition">%s</xliff:g> (push aktivan)</string>
   <string name="preposition_for_date">na <xliff:g id="date">%s</xliff:g></string>
-  <string name="mark_all_as_read">Označi sve pročitanim</string>
+  <string name="mark_all_as_read">Označi da je sve pročitano</string>
   <string name="global_settings_colorize_missing_contact_pictures_label">Oboji slike kontakta</string>
   <string name="global_settings_colorize_missing_contact_pictures_summary">Oboji slike kontakta koji nedostaje</string>
   <string name="global_settings_messageview_visible_refile_actions_title">Vidljive radnje poruke</string>
   <string name="global_settings_messageview_visible_refile_actions_summary">Prikaži odabrane radnje u izborniku pregleda poruke</string>
-  <string name="loading_attachment">Učitavam privitak…</string>
+  <string name="loading_attachment">Učitavam prilog…</string>
   <string name="fetching_attachment_dialog_title_send">Slaje poruke</string>
   <string name="fetching_attachment_dialog_title_save">Snimanje pripreme</string>
   <string name="fetching_attachment_dialog_message">Učitavanje priloga…</string>
-  <string name="auth_external_error">Ne mogu identificirati. Server ne prijavljuje SASL pristup. To može biti problem sa certifikatom klijenta (istekao, nepoznat izdavatelj certifikata) ili neki drugi konfiguracijski problem.</string>
+  <string name="auth_external_error">Ne mogu identificirati. Server ne prijavljuje mogućnost SASL pristupa. To može biti problem sa certifikatom klijenta (istekao, nepoznat izdavatelj certifikata) ili neki drugi konfiguracijski problem.</string>
   <!--=== OpenPGP specific ==================================================================-->
   <string name="openpgp_unknown_error">Nepoznata Greška OvorenogPGP-a</string>
   <string name="openpgp_canceled_by_user">Otkazano od korisnika</string>
-  <string name="openpgp_result_no_signature">Nije Prijavljen</string>
+  <string name="openpgp_result_no_signature">Nije prijavljen</string>
   <string name="openpgp_result_invalid_signature">Nevažeći potpis</string>
-  <string name="openpgp_result_signature_uncertified">Potpisno od (nije certificirano)</string>
+  <string name="openpgp_result_signature_uncertified">Necertificirani potpis od</string>
   <string name="openpgp_result_signature_certified">Potpisano od</string>
   <string name="openpgp_result_signature_expired_key">Ključ je istekao!</string>
   <string name="openpgp_result_signature_revoked_key">Ključ je opozvan</string>
@@ -867,7 +870,7 @@
   <string name="openpgp_result_action_show">Prikaži</string>
   <string name="openpgp_result_action_lookup">Potraži</string>
   <string name="openpgp_result_no_name">Bez naziva</string>
-  <string name="openpgp_result_no_email">Bez e-pošte</string>
+  <string name="openpgp_result_no_email">Bez emaila</string>
   <!--=== Client certificates specific ==================================================================-->
   <string name="account_setup_basics_client_certificate">Koristi certifikat klijenta</string>
   <string name="client_certificate_spinner_empty">Nema certifikata klijenta</string>
