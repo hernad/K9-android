@@ -85,7 +85,7 @@
   <string name="account_settings_action">Postavke računa</string>
   <string name="folder_settings_action">Postavke foldera</string>
   <string name="global_settings_action">Opšte postavke</string>
-  <string name="remove_account_action">Obriši račun</string>
+  <string name="remove_account_action">Obriši korisnički račun</string>
   <string name="clear_pending_action">Očisti akcije u toku (opasno!)</string>
   <string name="mark_as_read_action">Označi pročitanim</string>
   <string name="send_alternate_action">Podijeli sa drugima</string>
@@ -303,10 +303,10 @@
   <string name="account_setup_incoming_mobile_label">Mobilna</string>
   <string name="account_setup_incoming_wifi_label">Wi-Fi</string>
   <string name="account_setup_incoming_other_label">Ostalo</string>
-  <string name="local_storage_provider_external_label">Vanjska pohrana (SD kartica)</string>
-  <string name="local_storage_provider_internal_label">regularna unutarnja pohrana</string>
-  <string name="local_storage_provider_samsunggalaxy_label">%1$s dodatna interna pohrana</string>
-  <string name="local_storage_provider_label">Mjesto pohrane</string>
+  <string name="local_storage_provider_external_label">eksterna memorija (SD kartica)</string>
+  <string name="local_storage_provider_internal_label">interna memorija</string>
+  <string name="local_storage_provider_samsunggalaxy_label">%1$s dodatna interna memorija</string>
+  <string name="local_storage_provider_label">Lokacija za pohranu podataka</string>
   <string name="account_setup_expunge_policy_label">Obriši izbrisane poruke sa servera</string>
   <string name="account_setup_expunge_policy_immediately">Odmah</string>
   <string name="account_setup_expunge_policy_on_poll">Prilikom provjere</string>
@@ -339,7 +339,7 @@
   <string name="account_setup_options_title">Opcije računa</string>
   <string name="compact_action">Prepakuj račun</string>
   <string name="clear_action">Očisti poruke (opasno!)</string>
-  <string name="recreate_action">Ponovno kreiranje podataka (Posljednja nada)</string>
+  <string name="recreate_action">Ponovo kreirati podatke</string>
   <string name="account_setup_options_mail_check_frequency_label">Učestalost provjere foldera</string>
   <string name="account_setup_options_mail_check_frequency_never">Nikad</string>
   <string name="account_setup_options_mail_check_frequency_1min">Svake minute</string>
@@ -651,7 +651,7 @@
   <string name="volume_navigation_title">Navigacija tipkama glasnoće</string>
   <string name="volume_navigation_message">U pregledu poruka</string>
   <string name="volume_navigation_list">U pregledu popisa</string>
-  <string name="start_integrated_inbox_title">Započni u zajedničkom inboxu (univerzalni inbox)</string>
+  <string name="start_integrated_inbox_title">Započni u zajedničkom inboxu</string>
   <string name="measure_accounts_title">Prikaži veličinu računa</string>
   <string name="measure_accounts_summary">Isključite za brže prikazivanje</string>
   <string name="count_search_title">Brojač rezultata pretrage</string>
@@ -666,7 +666,7 @@
   <string name="integrated_inbox_title">Objedinjena ulazna pošta</string>
   <string name="integrated_inbox_detail">Sve poruke u zajedničkom inboxu</string>
   <string name="folder_settings_include_in_integrated_inbox_label">Spoji</string>
-  <string name="folder_settings_include_in_integrated_inbox_summary">Sve poruke su prikazane zajedničkom inboxu</string>
+  <string name="folder_settings_include_in_integrated_inbox_summary">Sve poruke su prikazane u zajedničkom inboxu</string>
   <string name="account_settings_searchable_label">Folderi za pretragu</string>
   <string name="account_settings_searchable_all">Sve</string>
   <string name="account_settings_searchable_displayable">Prikazane</string>
@@ -728,7 +728,7 @@
   </plurals>
   <string name="dialog_confirm_spam_confirm_button">Da</string>
   <string name="dialog_confirm_spam_cancel_button">Ne</string>
-  <string name="dialog_attachment_progress_title">Preuzimam privitak</string>
+  <string name="dialog_attachment_progress_title">Otvaram prilog</string>
   <string name="debug_logging_enabled">Opcija ispravljanja grešaka omogućena</string>
   <string name="messagelist_sent_to_me_sigil">»</string>
   <string name="messagelist_sent_cc_me_sigil">›</string>
