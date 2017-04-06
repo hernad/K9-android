@@ -19,7 +19,9 @@
 
 build bosanska verziju:
 
-        tools/build_only_bosanski.sh
+        tools/build_only_bosanski.sh [DEBUG]
+
+        tools/run_apk.sh [DEBUG]
 
 
 potpisivanje .apk:
