@@ -16,7 +16,7 @@ class WebDavConstants {
     // http://social.technet.microsoft.com/Forums/en/exchangesvrdevelopment/thread/1cd2e98c-8a12-44bd-a3e3-9c5ee9e4e14d
     static final String DAV_MAIL_INBOX_FOLDER = "inbox";
     static final String DAV_MAIL_DRAFTS_FOLDER = "drafts";
-    static final String DAV_MAIL_SPAM_FOLDER = "junkemail";
+    static final String DAV_MAIL_SPAM_FOLDER = "junk";
     static final String DAV_MAIL_SEND_FOLDER = "##DavMailSubmissionURI##";
     static final String DAV_MAIL_TRASH_FOLDER = "deleteditems";
     static final String DAV_MAIL_OUTBOX_FOLDER = "outbox";

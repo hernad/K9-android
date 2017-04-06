@@ -25,15 +25,15 @@
   <string name="open_market">Otvorite Trgovinu Play</string>
   <!--=== General strings ==================================================================-->
   <string name="app_authors_fmt">Autori: <xliff:g id="app_authors">%s</xliff:g></string>
-  <string name="app_revision_fmt">Informacije Revizije: <xliff:g id="app_revision_url">%s</xliff:g></string>
+  <string name="app_revision_fmt">Informacije o reviziji: <xliff:g id="app_revision_url">%s</xliff:g></string>
   <string name="app_libraries">Mi koristimo slijedeće biblioteke treće strane: <xliff:g id="app_libraries_list">%s</xliff:g></string>
   <string name="app_emoji_icons">Emoji ikone: <xliff:g id="app_emoji_icons_link">%s</xliff:g></string>
   <string name="read_attachment_label">čitanje priloga E-Pošte</string>
-  <string name="read_attachment_desc">Dopušta ovoj aplikaciji čitanje vaših privitaka E-Pošte.</string>
+  <string name="read_attachment_desc">Dopušta ovoj aplikaciji čitanje vaših email priloga.</string>
   <string name="read_messages_label">čitanje E-Pošte</string>
-  <string name="read_messages_desc">Dopušta ovoj aplikaciji čitanje vaše E-Pošte</string>
+  <string name="read_messages_desc">Dopušta ovoj aplikaciji čitanje vaših emailova</string>
   <string name="delete_messages_label">Brisanje E-Pošte</string>
-  <string name="delete_messages_desc">Dopušta ovoj aplikaciji brisanje vaše E-Pošte.</string>
+  <string name="delete_messages_desc">Dopušta ovoj aplikaciji brisanje vaših emailova.</string>
   <string name="about_title_fmt">O <xliff:g id="app_name">%s</xliff:g></string>
   <string name="accounts_title">Računi</string>
   <string name="folders_title">Folderi</string>
@@ -47,15 +47,15 @@
   <string name="status_loading_account_folder">Provjera <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
   <string name="status_loading_account_folder_headers">Učitavanje zaglavlja <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
   <string name="status_sending_account">Šaljem <xliff:g id="account">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
-  <string name="status_processing_account">Obrađujem <xliff:g id="account">%s</xliff:g>:<xliff:g id="command">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
+  <string name="status_processing_account">Obrada u toku <xliff:g id="account">%s</xliff:g>:<xliff:g id="command">%s</xliff:g><xliff:g id="progress">%s</xliff:g></string>
   <string name="folder_progress">\u0020<xliff:g id="completed">%d</xliff:g>/<xliff:g id="total">%d</xliff:g></string>
   <string name="status_next_poll">Slijedeća provjera <xliff:g id="nexttime">%s</xliff:g></string>
   <string name="status_syncing_off">Sinhroniziranje je onemogućeno</string>
   <string name="actionbar_selected"><xliff:g id="selection_count">%d</xliff:g> odabrano</string>
-  <string name="next_action">Slijedeća</string>
+  <string name="next_action">Sljeedeća</string>
   <string name="previous_action">Prethodna</string>
   <!--Used to confirm acceptance of dialog boxes, warnings, errors, etc.-->
-  <string name="okay_action">U REDU</string>
+  <string name="okay_action">U redu</string>
   <string name="cancel_action">Otkaži</string>
   <string name="send_action">Pošalji</string>
   <string name="send_again_action">Pošalji ponovo</string>
@@ -65,7 +65,7 @@
   <string name="reply_all_action">Odgovori svima</string>
   <string name="delete_action">Obriši</string>
   <string name="archive_action">Arhiva</string>
-  <string name="spam_action">Neželjena pošta (SPAM)</string>
+  <string name="spam_action">SPAM</string>
   <string name="forward_action">Proslijedi</string>
   <string name="move_action">Premjesti</string>
   <string name="single_message_options_action">Pošalji…</string>
@@ -88,7 +88,7 @@
   <string name="remove_account_action">Obriši račun</string>
   <string name="clear_pending_action">Očisti akcije u toku (opasno!)</string>
   <string name="mark_as_read_action">Označi pročitanim</string>
-  <string name="send_alternate_action">Podijeli</string>
+  <string name="send_alternate_action">Podijeli sa drugima</string>
   <string name="send_alternate_chooser_title">Odaberi server</string>
   <string name="flag_action">Dodaj zvjezdicu</string>
   <string name="unflag_action">Ukloni zvjezdicu</string>
@@ -139,7 +139,7 @@
   <string name="notification_action_mark_as_read">Označi pročitanim</string>
   <string name="notification_action_delete">Obriši</string>
   <string name="notification_action_archive">Arhiva</string>
-  <string name="notification_action_spam">Neželjena pošta (SPAM)</string>
+  <string name="notification_action_spam">SPAM</string>
   <string name="notification_certificate_error_title">Greška certifikata za <xliff:g id="account">%s</xliff:g></string>
   <string name="notification_certificate_error_text">provjerite postavke vašeg servera</string>
   <string name="notification_bg_sync_ticker">Provjeravam email: <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g></string>
@@ -147,18 +147,18 @@
   <string name="notification_bg_send_ticker">Šaljem poštu: <xliff:g id="account">%s</xliff:g></string>
   <string name="notification_bg_send_title">Slanje pošte</string>
   <string name="notification_bg_title_separator">:</string>
-  <string name="special_mailbox_name_inbox">Inbox (pristigle poruke)</string>
-  <string name="special_mailbox_name_outbox">Outbox (poruke koje se šalju)</string>
-  <string name="special_mailbox_name_drafts">Drafts (poruke u pripremi)</string>
+  <string name="special_mailbox_name_inbox">Inbox (pristiglo)</string>
+  <string name="special_mailbox_name_outbox">Outbox (slanje u toku)</string>
+  <string name="special_mailbox_name_drafts">Drafts (u pripremi)</string>
   <string name="special_mailbox_name_trash">Trash (smeće)</string>
   <string name="special_mailbox_name_sent">Sent (poslane poruke)</string>
   <string name="special_mailbox_name_archive">Arhiva</string>
-  <string name="special_mailbox_name_spam">Neželjena pošta (SPAM)</string>
-  <string name="special_mailbox_name_drafts_fmt"><xliff:g id="folder">%s</xliff:g> (drafts)</string>
-  <string name="special_mailbox_name_trash_fmt"><xliff:g id="folder">%s</xliff:g> (trash)</string>
-  <string name="special_mailbox_name_sent_fmt"><xliff:g id="folder">%s</xliff:g> (sent)</string>
-  <string name="special_mailbox_name_archive_fmt"><xliff:g id="folder">%s</xliff:g> (arhiva)</string>
-  <string name="special_mailbox_name_spam_fmt"><xliff:g id="folder">%s</xliff:g> (SPAM)</string>
+  <string name="special_mailbox_name_spam">SPAM</string>
+  <string name="special_mailbox_name_drafts_fmt"><xliff:g id="folder">%s</xliff:g></string>
+  <string name="special_mailbox_name_trash_fmt"><xliff:g id="folder">%s</xliff:g></string>
+  <string name="special_mailbox_name_sent_fmt"><xliff:g id="folder">%s</xliff:g></string>
+  <string name="special_mailbox_name_archive_fmt"><xliff:g id="folder">%s</xliff:g></string>
+  <string name="special_mailbox_name_spam_fmt"><xliff:g id="folder">%s</xliff:g></string>
   <string name="send_failure_subject">Slanje nekih poruka nije uspjelo</string>
   <string name="debug_version_fmt">Inačica: <xliff:g id="version">%s</xliff:g></string>
   <string name="debug_enable_debug_logging_title">Omogući zapisnik ispravljanja</string>
@@ -220,15 +220,15 @@
   <string name="global_settings_messageview_fixedwidth_summary">Koristi popravljenu širinu fonta prilikom prikaza običnog teksta poruke</string>
   <string name="global_settings_messageview_autofit_width_label">Automatska prilstajanje poruke</string>
   <string name="global_settings_messageview_autofit_width_summary">Stisni poruke kako bi pristajale zaslonu</string>
-  <string name="global_settings_messageview_return_to_list_label">Vraćanje na popis nakon brisanja</string>
-  <string name="global_settings_messageview_return_to_list_summary">Vraćanje na popis poruka nakon brisanja poruke</string>
+  <string name="global_settings_messageview_return_to_list_label">Vraćanje na listu poruka nakon brisanja</string>
+  <string name="global_settings_messageview_return_to_list_summary">Vraćanje na listu nakon brisanja</string>
   <string name="global_settings_messageview_show_next_label">Prikaži slijedeću poruku nakon brisanja</string>
   <string name="global_settings_messageview_show_next_summary">Prikaži slijedeću poruku po zadanom nakon brisanja poruke</string>
-  <string name="global_settings_confirm_actions_title">Potvrdi radnje</string>
+  <string name="global_settings_confirm_actions_title">Potvrdi akcije</string>
   <string name="global_settings_confirm_actions_summary">Prikazuje dijalog prilikom izvođenja odabranih radnji</string>
   <string name="global_settings_confirm_action_delete">Obriši</string>
   <string name="global_settings_confirm_action_delete_starred">Obriši Označeno Zvjezdicom (u pregledu poruke)</string>
-  <string name="global_settings_confirm_action_spam">Neželjena pošta</string>
+  <string name="global_settings_confirm_action_spam">SPAM</string>
   <string name="global_settings_confirm_menu_discard">Odbaci poruku</string>
   <string name="global_settings_confirm_action_delete_notif">Obriši (iz obavijesti)</string>
   <string name="global_settings_privacy_hide_useragent">Ukloni K9 UA iz zaglavlja emaila</string>
@@ -314,7 +314,7 @@
   <string name="sent_folder_label">Folder poslano (sent)</string>
   <string name="trash_folder_label">Folder smeće (trash)</string>
   <string name="archive_folder_label">Folder arhiva</string>
-  <string name="spam_folder_label">Folder neželjena pošta (SPAM)</string>
+  <string name="spam_folder_label">SPAM Folder</string>
   <string name="account_setup_incoming_subscribed_folders_only_label">Prikaži samo pretplaćene foldere</string>
   <string name="account_setup_auto_expand_folder">Automatsko proširivanje foldera</string>
   <string name="account_setup_incoming_webdav_path_prefix_label">OWA putanja</string>
@@ -325,19 +325,19 @@
   <string name="account_setup_incoming_webdav_mailbox_path_hint">Opciono</string>
   <string name="account_setup_outgoing_title">Postavke odlaznog servera</string>
   <string name="account_setup_outgoing_smtp_server_label">SMTP server</string>
-  <string name="account_setup_outgoing_port_label">Ulaz</string>
+  <string name="account_setup_outgoing_port_label">Izlaz</string>
   <string name="account_setup_outgoing_security_label">Sigurnost</string>
   <string name="account_setup_outgoing_require_login_label">Zahtjeva prijavu</string>
   <string name="account_setup_outgoing_username_label">Korisničko ime</string>
   <string name="account_setup_outgoing_password_label">Lozinka</string>
   <string name="account_setup_outgoing_authentication_label">Identifikacija</string>
   <string name="account_setup_outgoing_invalid_setting_combo_notice">\"<xliff:g id="setting_1_label">%1$s</xliff:g> = <xliff:g id="setting_1_value">%2$s</xliff:g>\" nije važeća sa \"<xliff:g id="setting_2_label">%3$s</xliff:g> = <xliff:g id="setting_2_value">%4$s</xliff:g>\"</string>
-  <string name="account_setup_bad_uri">Nevažeće postavljanje: <xliff:g id="err_mess">%s</xliff:g></string>
+  <string name="account_setup_bad_uri">Neispravan URI: <xliff:g id="err_mess">%s</xliff:g></string>
   <string name="account_setup_options_title">Opcije računa</string>
   <string name="compact_action">Sažmi račun</string>
   <string name="clear_action">Očisti poruke (opasno!)</string>
-  <string name="recreate_action">Ponovno kreiranje podataka (Posljednja Nada)</string>
-  <string name="account_setup_options_mail_check_frequency_label">Učestalost provjera foldera</string>
+  <string name="recreate_action">Ponovno kreiranje podataka (Posljednja nada)</string>
+  <string name="account_setup_options_mail_check_frequency_label">Učestalost provjere foldera</string>
   <string name="account_setup_options_mail_check_frequency_never">Nikad</string>
   <string name="account_setup_options_mail_check_frequency_1min">Svake minute</string>
   <string name="account_setup_options_mail_check_frequency_5min">Svakih 5 minuta</string>
@@ -353,7 +353,7 @@
   <string name="push_poll_on_connect_label">Provjeri prilikom povezivanja za guranje</string>
   <string name="account_setup_options_enable_push_label">Omogući email push za ovaj račun</string>
   <string name="account_setup_options_enable_push_summary">Ako vaš server podržava, nove poruke će se prikazivati odmah. Ova opcija može dramatično poboljšati ili pogoršati performanse.</string>
-  <string name="idle_refresh_period_label">Osvježi BESPOSLENU vezu</string>
+  <string name="idle_refresh_period_label">Osvježavanje u stanju čekanja</string>
   <string name="idle_refresh_period_1min">Svake minute</string>
   <string name="idle_refresh_period_2min">Svake 2 minute</string>
   <string name="idle_refresh_period_3min">Svake 3 minute</string>
@@ -582,13 +582,13 @@
   <string name="sort_attach_first">Prvo poruke sa privicima</string>
   <string name="sort_unattached_first">Prvo poruke bez privitaka</string>
   <string name="sort_by">Sortiraj po…</string>
-  <string name="sort_by_date">datumu</string>
-  <string name="sort_by_arrival">Prijemu</string>
-  <string name="sort_by_subject">Subjektu</string>
-  <string name="sort_by_sender">Pošiljatelju</string>
-  <string name="sort_by_flag">Zastavici</string>
-  <string name="sort_by_unread">Pročitano/nepročitano</string>
-  <string name="sort_by_attach">Prilozima</string>
+  <string name="sort_by_date">Sortiraj po datumu</string>
+  <string name="sort_by_arrival">.. prijemu</string>
+  <string name="sort_by_subject">.. subjektu</string>
+  <string name="sort_by_sender">.. pošaljiocu</string>
+  <string name="sort_by_flag">.. zastavici</string>
+  <string name="sort_by_unread">... status pročitano</string>
+  <string name="sort_by_attach">.. prilozima</string>
   <string name="account_delete_dlg_title">Obriši račun</string>
   <string name="account_recreate_dlg_title">Obnovi račun</string>
   <string name="account_clear_dlg_title">Očisti račun</string>
@@ -612,16 +612,16 @@
   <string name="setting_theme_global">Koristi temu aplikacije</string>
   <string name="setting_theme_dark">Tamna</string>
   <string name="setting_theme_light">Svijetla</string>
-  <string name="display_preferences">Zaslon</string>
+  <string name="display_preferences">Parametri prikaza</string>
   <string name="global_preferences">Opšte</string>
   <string name="debug_preferences">Ispravljanje grešaka</string>
   <string name="privacy_preferences">Privatnost</string>
   <string name="network_preferences">Mreža</string>
-  <string name="interaction_preferences">Interakcija</string>
+  <string name="interaction_preferences">Postavke korisničkog interfejsa</string>
   <string name="accountlist_preferences">Popis računa</string>
   <string name="messagelist_preferences">Popis poruka</string>
   <string name="messageview_preferences">Poruke</string>
-  <string name="folderlist_preferences">Popis mapa</string>
+  <string name="folderlist_preferences">Popis fildera</string>
   <string name="settings_theme_label">Tema</string>
   <string name="settings_message_theme_label">Tema pregleda poruke</string>
   <string name="settings_compose_theme_label">Tema sastavljanja poruke</string>
@@ -634,13 +634,13 @@
   <string name="background_ops_auto_sync_only">Kad je \'Automatska sinhronizacija\' označena</string>
   <string name="batch_select_all">Označi sve</string>
   <string name="account_setup_push_limit_label">Maksimum mapa za provjeru pushiranjem</string>
-  <string name="account_setup_push_limit_10">10 mapa</string>
-  <string name="account_setup_push_limit_25">25 mapa</string>
-  <string name="account_setup_push_limit_50">50 mapa</string>
-  <string name="account_setup_push_limit_100">100 mapa</string>
-  <string name="account_setup_push_limit_250">250 mapa</string>
-  <string name="account_setup_push_limit_500">500 mapa</string>
-  <string name="account_setup_push_limit_1000">1000 mapa</string>
+  <string name="account_setup_push_limit_10">10 foldera</string>
+  <string name="account_setup_push_limit_25">25 foldera</string>
+  <string name="account_setup_push_limit_50">50 foldera</string>
+  <string name="account_setup_push_limit_100">100 foldera</string>
+  <string name="account_setup_push_limit_250">250 foldera</string>
+  <string name="account_setup_push_limit_500">500 foldera</string>
+  <string name="account_setup_push_limit_1000">1000 foldera</string>
   <string name="animations_title">Animacija</string>
   <string name="animations_summary">Koristi šarolike vizualne efekte</string>
   <string name="gestures_title">Geste</string>
@@ -701,8 +701,8 @@
   <string name="font_size_medium">Srednja</string>
   <string name="font_size_large">Velika</string>
   <string name="font_size_larger">Veća</string>
-  <string name="miscellaneous_preferences">Razna</string>
-  <string name="error_activity_not_found">Nema prikladne aplikacije za ovu radnju.</string>
+  <string name="miscellaneous_preferences">Ostala podešenja</string>
+  <string name="error_activity_not_found">Nema pridružene aplikacije za ovu akciju.</string>
   <string name="save_or_discard_draft_message_dlg_title">Snimiti poruku u pripremi?</string>
   <string name="save_or_discard_draft_message_instructions_fmt">Snimiti ili odbaciti ovu poruku?</string>
   <string name="confirm_discard_draft_message_title">Odbaciti poruku?</string>
