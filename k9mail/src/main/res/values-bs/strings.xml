@@ -81,13 +81,13 @@
   <string name="compose_action">Sastavi</string>
   <string name="search_action">Pretraži</string>
   <string name="search_results">Rezultati pretraživanja</string>
-  <string name="preferences_action">Podešenja</string>
+  <string name="preferences_action">Postavke</string>
   <string name="account_settings_action">Postavke računa</string>
   <string name="folder_settings_action">Postavke foldera</string>
   <string name="global_settings_action">Opšte postavke</string>
   <string name="remove_account_action">Obriši korisnički račun</string>
   <string name="clear_pending_action">Očisti akcije u toku (opasno!)</string>
-  <string name="mark_as_read_action">Označi pročitanim</string>
+  <string name="mark_as_read_action">Pročitano</string>
   <string name="send_alternate_action">Podijeli sa drugima</string>
   <string name="send_alternate_chooser_title">Odaberi server</string>
   <string name="flag_action">Dodaj zvjezdicu</string>
@@ -107,14 +107,14 @@
   <string name="expunge_action">Izbrisati</string>
   <string name="clear_local_folder_action">Očistiti lokalne poruke</string>
   <string name="about_action">O programu</string>
-  <string name="prefs_title">Podešenja</string>
+  <string name="prefs_title">Postavke</string>
   <string name="accounts_context_menu_title">Opcije računa</string>
   <!--Shown in place of the subject when a message has no subject. Showing this in parentheses is customary.-->
   <string name="general_no_subject">(Nema subjekta)</string>
   <string name="general_no_sender">Nema servera</string>
   <string name="status_loading">Provjera u toku</string>
   <string name="status_loading_more">Učitavanje poruka\u2026</string>
-  <string name="status_network_error">Greška veze</string>
+  <string name="status_network_error">Greška sa mrežom</string>
   <string name="status_invalid_id_error">Poruka nije pronađena</string>
   <string name="status_loading_more_failed">pokušaj učitati više poruka</string>
   <string name="load_more_messages_fmt">Učitati
@@ -704,7 +704,7 @@
   <string name="font_size_medium">Srednja</string>
   <string name="font_size_large">Velika</string>
   <string name="font_size_larger">Veća</string>
-  <string name="miscellaneous_preferences">Ostala podešenja</string>
+  <string name="miscellaneous_preferences">Ostale postavke</string>
   <string name="error_activity_not_found">Nema pridružene aplikacije za ovu akciju.</string>
   <string name="save_or_discard_draft_message_dlg_title">Snimiti poruku u pripremi?</string>
   <string name="save_or_discard_draft_message_instructions_fmt">Snimiti ili odbaciti ovu poruku?</string>
@@ -732,7 +732,7 @@
   <string name="debug_logging_enabled">Opcija ispravljanja grešaka omogućena</string>
   <string name="messagelist_sent_to_me_sigil">»</string>
   <string name="messagelist_sent_cc_me_sigil">›</string>
-  <string name="import_export_action">Podešenja Uvoz &amp; Izvoz</string>
+  <string name="import_export_action">Postavke Uvoz &amp; Izvoz</string>
   <string name="settings_export_account">Izvoz postavki računa</string>
   <string name="settings_export_all">Izvoz postavki i računa</string>
   <string name="settings_import_dialog_title">Uvoz</string>
