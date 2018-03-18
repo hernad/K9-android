@@ -206,12 +206,9 @@
   <string name="message_view_attachment_download_action">Snimi</string>
   <string name="message_view_status_attachment_not_saved">Snimanje priloga na SD karticu nije moguće.</string>
   <string name="message_view_show_pictures_action">Prikaži slike</string>
-<<<<<<< HEAD:k9mail/src/main/res/values-bs/strings.xml
   <string name="message_view_show_more_attachments_action">Više…</string>
   <string name="message_view_no_viewer">Ne mogu pronaći aplikaciju za pregled <xliff:g id="mimetype">%s</xliff:g>.</string>
-=======
   <string name="message_view_no_viewer">Ne mogu pronaći preglednik za <xliff:g id="mimetype">%s</xliff:g>.</string>
->>>>>>> 5.501:k9mail/src/main/res/values-hr/strings.xml
   <string name="message_view_download_remainder">Preuzmi cijelu poruku</string>
   <!--NOTE: The following message refers to strings with id account_setup_incoming_save_all_headers_label and account_setup_incoming_title-->
   <string name="message_no_additional_headers_available">Sva zaglavlja su preuzeta, ali nema dodatnih zaglavlja za prikaz.</string>
@@ -250,12 +247,9 @@
   <string name="global_settings_confirm_action_spam">SPAM</string>
   <string name="global_settings_confirm_menu_discard">Odbaci poruku</string>
   <string name="global_settings_confirm_action_delete_notif">Obriši (iz obavijesti)</string>
-<<<<<<< HEAD:k9mail/src/main/res/values-bs/strings.xml
   <string name="global_settings_privacy_hide_useragent">Ukloni K9 UA iz zaglavlja emaila</string>
   <string name="global_settings_privacy_hide_timezone">Koristi KSV kao vremensku zonu u zaglavlju emaila</string>
-=======
   <string name="global_settings_privacy_hide_useragent_detail">Makni K-9 Korisničkog agenta iz zaglavlja pošte</string>
->>>>>>> 5.501:k9mail/src/main/res/values-hr/strings.xml
   <string name="global_settings_notification_hide_subject_title">Sakrij subjekt u obavijesti</string>
   <string name="global_settings_notification_hide_subject_never">Nikad</string>
   <string name="global_settings_notification_hide_subject_when_locked">Kad je uređaj zaključan</string>
@@ -519,7 +513,6 @@
   <string name="account_settings_sync_remote_deletetions_summary">Ukloni poruke prilikom brisanja sa servera</string>
   <string name="folder_settings_title">Postavke foldera</string>
   <string name="folder_settings_in_top_group_label">Prikaži na vrhu grupe</string>
-<<<<<<< HEAD:k9mail/src/main/res/values-bs/strings.xml
   <string name="folder_settings_in_top_group_summary">Prikaži blizu vrha na popisu foldera</string>
   <string name="folder_settings_folder_display_mode_label">Nivo prikaza foldera</string>
   <string name="folder_settings_folder_display_mode_normal">Nijedan</string>
@@ -544,7 +537,6 @@
   <string name="account_settings_incoming_summary">Postavke email servera za prijem (IMAP)</string>
   <string name="account_settings_outgoing_label">Odlazni server</string>
   <string name="account_settings_outgoing_summary">Postavite email servera za odlaznu poštu (SMTP)</string>
-=======
   <string name="folder_settings_in_top_group_summary">Prikaži blizu vrha na popisu mapa</string>
   <string name="folder_settings_folder_display_mode_label">Razred prikaza mape</string>
   <string name="folder_settings_folder_display_mode_first_class">1. Razreda</string>
@@ -565,7 +557,6 @@
   <string name="account_settings_incoming_summary">Postavite dolazni poslužitelj e-pošte</string>
   <string name="account_settings_outgoing_label">Odlazni poslužitelj</string>
   <string name="account_settings_outgoing_summary">Postavite odlazni (SMTP) poslužitelj e-pošte</string>
->>>>>>> 5.501:k9mail/src/main/res/values-hr/strings.xml
   <string name="account_settings_description_label">Naziv računa</string>
   <string name="account_settings_name_label">vaše ime</string>
   <string name="notifications_title">Obavijesti</string>
@@ -643,7 +634,6 @@
   <string name="account_setup_failed_dlg_invalid_certificate_title">Nepoznat certifikat</string>
   <string name="account_setup_failed_dlg_invalid_certificate_accept">Prihvati ključ</string>
   <string name="account_setup_failed_dlg_invalid_certificate_reject">Odbij ključ</string>
-<<<<<<< HEAD:k9mail/src/main/res/values-bs/strings.xml
   <string name="message_list_help_key">Del (or D) - Obriši\nR - Odgovori\nA - Odgovori Svima\nC - Sastavi\nF - Proslijedi\nM - Premjesti\nV - Arhiviraj\nY - Kopiraj\nZ - Označi (Ne)pročitano\nG - Zvjezdica\nO - Sortiranje vrste\nI - Poredak sortiranja\nQ - Povratak na foldere\nS - Označi/ukloni oznaku\nJ or P - Prethodna poruka\nK or N - Sljedeća poruka</string>
   <string name="folder_list_help_key">1 - Prikaži samo foldere 1. nivoa\n2 - Prikaži foldere 1. i 2. nivoa\n3 - Prikaži sve osim foldera 2. nivoa\n4 - Prikaži sve foldere\nQ - Povratak na email račune\nS - Ispravi postavke email računa</string>
   <string name="folder_list_filter_hint">naziv fildera sadrži</string>
@@ -652,14 +642,12 @@
   <string name="folder_list_display_mode_first_class">Folderi 1. nivoa</string>
   <string name="folder_list_display_mode_first_and_second_class">Folderi 1. &amp; 2. nivoa</string>
   <string name="folder_list_display_mode_not_second_class">Sakrij foldere 2. nivoa</string>
-=======
   <string name="folder_list_help_key">1 - Prikaži samo mape 1. Razreda\n2 - Prikaži mape 1. i 2. Razreda\n3 - Prikaži sve osim mapa 2. Razreda\n4 - Prikaži sve mape\nQ - Povratak na Račune\nS - Uredi Postavei Računa</string>
   <string name="folder_list_display_mode_label">Prikaži mape…</string>
   <string name="folder_list_display_mode_all">Sve mape</string>
   <string name="folder_list_display_mode_first_class">Mape 1. Razreda</string>
   <string name="folder_list_display_mode_first_and_second_class">Mape 1. &amp; 2. Razreda</string>
   <string name="folder_list_display_mode_not_second_class">Sakrij mape 2. Razreda</string>
->>>>>>> 5.501:k9mail/src/main/res/values-hr/strings.xml
   <string name="account_settings_signature__location_label">Pozicija potpisa</string>
   <string name="account_settings_signature__location_before_quoted_text">Poruke prije citiranja</string>
   <string name="account_settings_signature__location_after_quoted_text">Poruke nakon citiranja</string>
@@ -774,13 +762,10 @@
   </plurals>
   <string name="dialog_confirm_delete_confirm_button">Da</string>
   <string name="dialog_confirm_delete_cancel_button">Ne</string>
-<<<<<<< HEAD:k9mail/src/main/res/values-bs/strings.xml
   <string name="dialog_confirm_spam_title">Potvrda premještanja u smeće</string>
-=======
   <string name="dialog_confirm_mark_all_as_read_confirm_button">Da</string>
   <string name="dialog_confirm_mark_all_as_read_cancel_button">Ne</string>
   <string name="dialog_confirm_spam_title">Potvrda premještanja u mapu neželjena pošta</string>
->>>>>>> 5.501:k9mail/src/main/res/values-hr/strings.xml
   <plurals name="dialog_confirm_spam_message">
     <item quantity="one">Da li stvarno želite premjestiti ovu poruku u smeće?</item>
     <item quantity="few">Da li stvarno želite obrisati <xliff:g id="message_count">%1$d</xliff:g> poruke?</item>
@@ -874,7 +859,6 @@
   <string name="account_settings_remote_search_num_results_entries_1000">1000</string>
   <string name="account_settings_remote_search_num_label">Granica pretrage servera</string>
   <string name="account_settings_remote_search_num_summary">Traženje će se zaustaviti nakon pronalaska <xliff:g id="num_results">%s</xliff:g> rezultata.</string>
-<<<<<<< HEAD:k9mail/src/main/res/values-bs/strings.xml
   <string name="remote_search_sending_query">Šaljem upit serveru</string>
   <string name="remote_search_downloading">Zahvaćam %d rezultate</string>
   <string name="remote_search_downloading_limited">Preuzimam  %1$d of %2$d rezultata</string>
@@ -888,7 +872,6 @@
   <string name="remote_search_unavailable_no_network">Potrebna je mrežna veza za pretragu servera.</string>
   <string name="global_settings_background_as_unread_indicator_label">Zamagli poruke nakon čitanja</string>
   <string name="global_settings_background_as_unread_indicator_summary">Siva pozadina ukazuje da je poruka pročitana</string>
-=======
   <string name="remote_search_sending_query">Šaljem upit poslužitelju</string>
   <string name="remote_search_error">Udaljeno pretraživanje nije uspjelo</string>
   <string name="account_settings_search">Pretraga</string>
@@ -898,7 +881,6 @@
   <string name="pull_to_refresh_remote_search_from_local_search_pull">Povuci za pretragu poslužitelja…</string>
   <string name="pull_to_refresh_remote_search_from_local_search_release">Otpusti za pretragu poslužitelja…</string>
   <string name="remote_search_unavailable_no_network">Potrebna je mrežna veza za pretragu poslužitelja.</string>
->>>>>>> 5.501:k9mail/src/main/res/values-hr/strings.xml
   <string name="global_settings_threaded_view_label">Pregled niza</string>
   <string name="global_settings_threaded_view_summary">Grupiraj poruke po konverzaciji</string>
   <string name="upgrade_databases_title">Nadograđujem bazu podataka</string>
@@ -922,7 +904,6 @@
   <string name="global_settings_messageview_visible_refile_actions_summary">Prikaži odabrane radnje u izborniku pregleda poruke</string>
   <string name="loading_attachment">Učitavam prilog…</string>
   <string name="fetching_attachment_dialog_title_send">Slaje poruke</string>
-<<<<<<< HEAD:k9mail/src/main/res/values-bs/strings.xml
   <string name="fetching_attachment_dialog_title_save">Snimanje pripreme</string>
   <string name="fetching_attachment_dialog_message">Učitavanje priloga…</string>
   <string name="auth_external_error">Ne mogu identificirati. Server ne prijavljuje mogućnost SASL pristupa. To može biti problem sa certifikatom klijenta (istekao, nepoznat izdavatelj certifikata) ili neki drugi konfiguracijski problem.</string>
@@ -944,11 +925,9 @@
   <string name="openpgp_result_action_lookup">Potraži</string>
   <string name="openpgp_result_no_name">Bez naziva</string>
   <string name="openpgp_result_no_email">Bez emaila</string>
-=======
   <string name="fetching_attachment_dialog_title_save">Spremanje skice</string>
   <string name="fetching_attachment_dialog_message">Dohvaćanje privitka…</string>
   <string name="auth_external_error">Ne mogu identificirati. Poslužitelj ne oglašava SASL VANJSKU sposobnost. To može biti problem sa certifikatom klijenta (istekao, nepoznat izdavatelj certifikata) ili neki drugi konfiguracijski problem.</string>
->>>>>>> 5.501:k9mail/src/main/res/values-hr/strings.xml
   <!--=== Client certificates specific ==================================================================-->
   <string name="account_setup_basics_client_certificate">Koristi certifikat klijenta</string>
   <string name="client_certificate_spinner_empty">Nema certifikata klijenta</string>
@@ -957,7 +936,6 @@
   <string name="client_certificate_advanced_options">Napredne Opcije</string>
   <string name="client_certificate_expired">Certifikat klijenta \"<xliff:g id="certificate_alias">%1$s</xliff:g>\" je istekao ili još nije važeći (<xliff:g id="exception_message">%2$s</xliff:g>)</string>
   <!--Note: This references message_view_download_remainder-->
-<<<<<<< HEAD:k9mail/src/main/res/values-bs/strings.xml
   <string name="crypto_download_complete_message_to_decrypt">Kliknite \'Preuzimanje cijele poruke\' za omogućavanje dekripcije.</string>
 
 
@@ -1137,7 +1115,6 @@ Please submit bug reports, contribute new features and ask questions at
   <string name="no_crypto_provider_see_global">No OpenPGP app configured, see global settings!</string>
 
 
-=======
   <string name="crypto_settings_cancel">Otkaži</string>
   <string name="recipient_cc">Cc</string>
   <string name="recipient_bcc">Bcc</string>
@@ -1148,5 +1125,4 @@ Please submit bug reports, contribute new features and ask questions at
   <string name="crypto_info_ok">U REDU</string>
   <string name="message_progress_text">Učitavam…</string>
   <string name="openpgp_enabled_error_back">Natrag</string>
->>>>>>> 5.501:k9mail/src/main/res/values-hr/strings.xml
 </resources>
