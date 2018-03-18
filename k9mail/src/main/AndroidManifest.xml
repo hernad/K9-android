@@ -250,9 +250,11 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
 
+            <intent-filter>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
             </intent-filter>
+            
             <intent-filter>
                 <action android:name="org.autocrypt.PEER_ACTION"/>
                 <category android:name="android.intent.category.DEFAULT"/>
