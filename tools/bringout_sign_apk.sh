@@ -6,7 +6,7 @@ SIGNING_NAME="bring.out doo Sarajevo"
 BUILD_TOOLS_VER=27.0.3
 VALID_DAYS=20000
 
-cd k9mail/build/outputs/apk
+cd k9mail/build/outputs/apk/release
 
 #if [ ! -f bringout-android.keystore ]
 #then
@@ -27,8 +27,8 @@ $ANDROID_HOME/build-tools/$BUILD_TOOLS_VER/zipalign 4 \
     k9mail-release-unsigned.apk  k9mail-signed.apk
 
 
-cp k9mail-signed.apk ../../../../
+#cp k9mail-signed.apk ../../../../
  
-cd ../../../../
+#cd ../../../../
  
-ls -lh k9mail-signed.apk
+#ls -lh k9mail-signed.apk

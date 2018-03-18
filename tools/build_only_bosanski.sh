@@ -65,7 +65,6 @@ then
    cp $APK_DIR/k9mail-debug.apk .
 
 else
-  cp /bringout-android.keystore ${APK_DIR}/
   ./gradlew assembleRelease
   #mkdir -p 
   
