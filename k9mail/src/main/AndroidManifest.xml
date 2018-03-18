@@ -250,8 +250,6 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
 
-<<<<<<< HEAD
-=======
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
             </intent-filter>
@@ -259,7 +257,6 @@
                 <action android:name="org.autocrypt.PEER_ACTION"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
->>>>>>> 5.501
         </activity>
 
         <!-- Search Activity - searchable -->
@@ -425,17 +422,9 @@
         <provider
             android:name=".provider.AttachmentProvider"
             android:authorities="${applicationId}.attachmentprovider"
-<<<<<<< HEAD
-            android:exported="true"
-            android:grantUriPermissions="true"
-            android:multiprocess="true"
-            android:readPermission="${applicationId}.permission.READ_ATTACHMENT">
-
-=======
             android:exported="false"
             android:grantUriPermissions="true">
             
->>>>>>> 5.501
             <meta-data
                 android:name="de.cketti.safecontentresolver.ALLOW_INTERNAL_ACCESS"
                 android:value="true" />
