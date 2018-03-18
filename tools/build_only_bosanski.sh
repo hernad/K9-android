@@ -62,12 +62,10 @@ mkdir -p $APK_DIR
 if [ x$1 == xDEBUG ]
 then
   ./gradlew assembleDebug
-   cp $APK_DIR/k9mail-debug.apk .
+   #cp $APK_DIR/k9mail-debug.apk .
 
 else
   ./gradlew assembleRelease
-  #mkdir -p 
-  
 fi
 
 
