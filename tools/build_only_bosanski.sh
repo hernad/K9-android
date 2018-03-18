@@ -64,7 +64,7 @@ then
 else
   ./gradlew assembleRelease
   #mkdir -p 
-  cp bringout-android.keystore ${APK_DIR}/
+  cp /bringout-android.keystore ${APK_DIR}/
 fi
 
 
