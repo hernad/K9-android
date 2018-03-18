@@ -3,8 +3,6 @@ package com.fsck.k9.ui.crypto;
 
 import java.util.HashMap;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.fsck.k9.mail.Part;
 import com.fsck.k9.mailstore.CryptoResultAnnotation;
 
@@ -12,11 +10,7 @@ import com.fsck.k9.mailstore.CryptoResultAnnotation;
 public class MessageCryptoAnnotations {
     private HashMap<Part, CryptoResultAnnotation> annotations = new HashMap<>();
 
-    MessageCryptoAnnotations() {
-        // Package-private constructor
-    }
-
-    void put(Part part, CryptoResultAnnotation annotation) {
+    public void put(Part part, CryptoResultAnnotation annotation) {
         annotations.put(part, annotation);
     }
 

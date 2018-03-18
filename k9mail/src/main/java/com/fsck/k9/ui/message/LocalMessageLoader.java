@@ -6,7 +6,6 @@ import android.content.Context;
 import timber.log.Timber;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.mail.MessagingException;
@@ -17,14 +16,16 @@ public class LocalMessageLoader extends AsyncTaskLoader<LocalMessage> {
     private final MessagingController controller;
     private final Account account;
     private final MessageReference messageReference;
+    private final boolean onlyLoadMetadata;
     private LocalMessage message;
 
     public LocalMessageLoader(Context context, MessagingController controller, Account account,
-            MessageReference messageReference) {
+            MessageReference messageReference, boolean onlyLoadMetaData) {
         super(context);
         this.controller = controller;
         this.account = account;
         this.messageReference = messageReference;
+        this.onlyLoadMetadata = onlyLoadMetaData;
     }
 
     @Override
@@ -47,11 +48,19 @@ public class LocalMessageLoader extends AsyncTaskLoader<LocalMessage> {
     @Override
     public LocalMessage loadInBackground() {
         try {
-            return loadMessageFromDatabase();
+            if (onlyLoadMetadata) {
+                return loadMessageMetadataFromDatabase();
+            } else {
+                return loadMessageFromDatabase();
+            }
         } catch (Exception e) {
             Timber.e(e, "Error while loading message from database");
             return null;
         }
+    }
+
+    private LocalMessage loadMessageMetadataFromDatabase() throws MessagingException {
+        return controller.loadMessageMetadata(account, messageReference.getFolderName(), messageReference.getUid());
     }
 
     private LocalMessage loadMessageFromDatabase() throws MessagingException {

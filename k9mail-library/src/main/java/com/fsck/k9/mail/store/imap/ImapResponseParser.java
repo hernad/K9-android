@@ -441,7 +441,12 @@ class ImapResponseParser {
             }
         }
 
-        throw new IOException("readStringUntil(): end of stream reached");
+        throw new IOException("readStringUntil(): end of stream reached. " +
+                "Read: \"" + sb.toString() + "\" while waiting for " + formatChar(end));
+    }
+
+    private String formatChar(char value) {
+        return value < 32 ? "[" + Integer.toString(value) + "]" : "'" + value + "'";
     }
 
     private String readStringUntilEndOfLine() throws IOException {
@@ -467,7 +472,7 @@ class ImapResponseParser {
                 symbol.equalsIgnoreCase(Responses.BYE);
     }
 
-    static boolean equalsIgnoreCase(Object token, String symbol) {
+    public static boolean equalsIgnoreCase(Object token, String symbol) {
         if (token == null || !(token instanceof String)) {
             return false;
         }
@@ -477,7 +482,7 @@ class ImapResponseParser {
 
     private void checkTokenIsString(Object token) throws IOException {
         if (!(token instanceof String)) {
-            throw new IOException("Unexpected non-string token: " + token);
+            throw new IOException("Unexpected non-string token: " + token.getClass().getSimpleName() + " - " + token);
         }
     }
 }

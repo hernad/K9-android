@@ -11,19 +11,19 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import timber.log.Timber;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
-import com.fsck.k9.R;
 import com.fsck.k9.mailstore.CryptoResultAnnotation;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
+import timber.log.Timber;
 
 
+@SuppressWarnings("WeakerAccess")
 public class MessageCryptoPresenter implements OnCryptoClickListener {
     public static final int REQUEST_CODE_UNKNOWN_KEY = 123;
+    public static final int REQUEST_CODE_SECURITY_WARNING = 124;
 
 
     // injected state
@@ -72,39 +72,13 @@ public class MessageCryptoPresenter implements OnCryptoClickListener {
             return false;
         }
 
+        if (cryptoResultAnnotation.isOverrideSecurityWarning()) {
+            overrideCryptoWarning = true;
+        }
+
         messageView.getMessageHeaderView().setCryptoStatus(displayStatus);
 
         switch (displayStatus) {
-            case UNENCRYPTED_SIGN_REVOKED:
-            case ENCRYPTED_SIGN_REVOKED: {
-                showMessageCryptoWarning(messageView, account, messageViewInfo,
-                        R.string.messageview_crypto_warning_revoked);
-                break;
-            }
-            case UNENCRYPTED_SIGN_EXPIRED:
-            case ENCRYPTED_SIGN_EXPIRED: {
-                showMessageCryptoWarning(messageView, account, messageViewInfo,
-                        R.string.messageview_crypto_warning_expired);
-                break;
-            }
-            case UNENCRYPTED_SIGN_INSECURE:
-            case ENCRYPTED_SIGN_INSECURE: {
-                showMessageCryptoWarning(messageView, account, messageViewInfo,
-                        R.string.messageview_crypto_warning_insecure);
-                break;
-            }
-            case UNENCRYPTED_SIGN_ERROR:
-            case ENCRYPTED_SIGN_ERROR: {
-                showMessageCryptoWarning(messageView, account, messageViewInfo,
-                        R.string.messageview_crypto_warning_error);
-                break;
-            }
-            case ENCRYPTED_UNSIGNED: {
-                showMessageCryptoWarning(messageView, account, messageViewInfo,
-                        R.string.messageview_crypto_warning_unsigned);
-                break;
-            }
-
             case CANCELLED: {
                 Drawable providerIcon = getOpenPgpApiProviderIcon(messageView.getContext());
                 messageView.showMessageCryptoCancelledView(messageViewInfo, providerIcon);
@@ -144,17 +118,6 @@ public class MessageCryptoPresenter implements OnCryptoClickListener {
         return true;
     }
 
-    private void showMessageCryptoWarning(MessageTopView messageView, Account account,
-            MessageViewInfo messageViewInfo, @StringRes int warningStringRes) {
-        if (overrideCryptoWarning) {
-            messageView.showMessage(account, messageViewInfo);
-            return;
-        }
-        Drawable providerIcon = getOpenPgpApiProviderIcon(messageView.getContext());
-        messageView.showMessageCryptoWarning(messageViewInfo, providerIcon, warningStringRes);
-    }
-
-
     @Override
     public void onCryptoClick() {
         if (cryptoResultAnnotation == null) {
@@ -177,19 +140,22 @@ public class MessageCryptoPresenter implements OnCryptoClickListener {
 
     @SuppressWarnings("UnusedParameters") // for consistency with Activity.onActivityResult
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode != REQUEST_CODE_UNKNOWN_KEY) {
+        if (requestCode == REQUEST_CODE_UNKNOWN_KEY) {
+            if (resultCode != Activity.RESULT_OK) {
+                return;
+            }
+
+            messageCryptoMvpView.restartMessageCryptoProcessing();
+        } else if (requestCode == REQUEST_CODE_SECURITY_WARNING) {
+            messageCryptoMvpView.redisplayMessage();
+        } else {
             throw new IllegalStateException("got an activity result that wasn't meant for us. this is a bug!");
         }
-
-        if (resultCode != Activity.RESULT_OK) {
-            return;
-        }
-
-        messageCryptoMvpView.restartMessageCryptoProcessing();
     }
 
     private void displayCryptoInfoDialog(MessageCryptoDisplayStatus displayStatus) {
-        messageCryptoMvpView.showCryptoInfoDialog(displayStatus);
+        messageCryptoMvpView.showCryptoInfoDialog(
+                displayStatus, cryptoResultAnnotation.hasOpenPgpInsecureWarningPendingIntent());
     }
 
     private void launchPendingIntent(CryptoResultAnnotation cryptoResultAnnotation) {
@@ -220,9 +186,16 @@ public class MessageCryptoPresenter implements OnCryptoClickListener {
         messageCryptoMvpView.restartMessageCryptoProcessing();
     }
 
-    public void onClickShowMessageOverrideWarning() {
-        overrideCryptoWarning = true;
-        messageCryptoMvpView.redisplayMessage();
+    public void onClickShowCryptoWarningDetails() {
+        try {
+            PendingIntent pendingIntent = cryptoResultAnnotation.getOpenPgpInsecureWarningPendingIntent();
+            if (pendingIntent != null) {
+                messageCryptoMvpView.startPendingIntentForCryptoPresenter(
+                        pendingIntent.getIntentSender(), REQUEST_CODE_SECURITY_WARNING, null, 0, 0, 0);
+            }
+        } catch (IntentSender.SendIntentException e) {
+            Timber.e(e, "SendIntentException");
+        }
     }
 
     public Parcelable getDecryptionResultForReply() {
@@ -257,7 +230,7 @@ public class MessageCryptoPresenter implements OnCryptoClickListener {
         void startPendingIntentForCryptoPresenter(IntentSender si, Integer requestCode, Intent fillIntent,
                 int flagsMask, int flagValues, int extraFlags) throws IntentSender.SendIntentException;
 
-        void showCryptoInfoDialog(MessageCryptoDisplayStatus displayStatus);
+        void showCryptoInfoDialog(MessageCryptoDisplayStatus displayStatus, boolean hasSecurityWarning);
         void showCryptoConfigDialog();
     }
 }

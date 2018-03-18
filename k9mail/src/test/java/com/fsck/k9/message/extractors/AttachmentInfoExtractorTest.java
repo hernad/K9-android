@@ -130,9 +130,23 @@ public class AttachmentInfoExtractorTest {
     }
 
     @Test
-    public void extractInfoForDb__withDispositionInlineAndContentId__shouldReturnInlineAttachment()
+    public void extractInfoForDb__withDispositionInlineAndContentIdAndMissingMimeType__shouldNotReturnInlineAttachment()
             throws Exception {
         Part part = new MimeBodyPart();
+        part.addRawHeader(MimeHeader.HEADER_CONTENT_ID, MimeHeader.HEADER_CONTENT_ID + ": " + TEST_CONTENT_ID);
+        part.addRawHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, MimeHeader.HEADER_CONTENT_DISPOSITION + ": " +
+                "inline" + ";\n  filename=\"filename.ext\";\n  meaningless=\"dummy\"");
+
+        AttachmentViewInfo attachmentViewInfo = attachmentInfoExtractor.extractAttachmentInfoForDatabase(part);
+
+        assertFalse(attachmentViewInfo.inlineAttachment);
+    }
+
+    @Test
+    public void extractInfoForDb__withDispositionInlineAndContentIdAndImageMimeType__shouldReturnInlineAttachment()
+            throws Exception {
+        Part part = new MimeBodyPart();
+        part.addRawHeader(MimeHeader.HEADER_CONTENT_TYPE, MimeHeader.HEADER_CONTENT_TYPE + ": image/png");
         part.addRawHeader(MimeHeader.HEADER_CONTENT_ID, MimeHeader.HEADER_CONTENT_ID + ": " + TEST_CONTENT_ID);
         part.addRawHeader(MimeHeader.HEADER_CONTENT_DISPOSITION, MimeHeader.HEADER_CONTENT_DISPOSITION + ": " +
                 "inline" + ";\n  filename=\"filename.ext\";\n  meaningless=\"dummy\"");
@@ -168,7 +182,7 @@ public class AttachmentInfoExtractorTest {
 
         AttachmentViewInfo attachmentViewInfo = attachmentInfoExtractor.extractAttachmentInfoForDatabase(part);
 
-        assertFalse(attachmentViewInfo.isContentAvailable);
+        assertFalse(attachmentViewInfo.isContentAvailable());
     }
 
     @Test
@@ -178,7 +192,7 @@ public class AttachmentInfoExtractorTest {
 
         AttachmentViewInfo attachmentViewInfo = attachmentInfoExtractor.extractAttachmentInfoForDatabase(part);
 
-        assertTrue(attachmentViewInfo.isContentAvailable);
+        assertTrue(attachmentViewInfo.isContentAvailable());
     }
 
     @Test
@@ -206,6 +220,6 @@ public class AttachmentInfoExtractorTest {
         assertEquals(TEST_SIZE, attachmentViewInfo.size);
         assertEquals(TEST_MIME_TYPE, attachmentViewInfo.mimeType);
         assertFalse(attachmentViewInfo.inlineAttachment);
-        assertTrue(attachmentViewInfo.isContentAvailable);
+        assertTrue(attachmentViewInfo.isContentAvailable());
     }
 }

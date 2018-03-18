@@ -220,6 +220,7 @@ public class Account implements BaseAccount, StoreConfig {
     private boolean stripSignature;
     private boolean syncRemoteDeletions;
     private long pgpCryptoKey;
+    private boolean autocryptPreferEncryptMutual;
     private boolean markMessageAsReadOnView;
     private boolean alwaysShowCcBcc;
     private boolean allowRemoteSearch;
@@ -821,6 +822,50 @@ public class Account implements BaseAccount, StoreConfig {
         return stats;
     }
 
+    public int getFolderUnreadCount(Context context, String folderName) throws MessagingException {
+        if (!isAvailable(context)) {
+            return 0;
+        }
+
+        int unreadMessageCount = 0;
+
+        Cursor cursor = loadUnreadCountForFolder(context, folderName);
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                unreadMessageCount = cursor.getInt(0);
+            }
+        } finally {
+            Utility.closeQuietly(cursor);
+        }
+
+        return unreadMessageCount;
+    }
+
+    private Cursor loadUnreadCountForFolder(Context context, String folderName) {
+        ContentResolver cr = context.getContentResolver();
+
+        Uri uri = Uri.withAppendedPath(EmailProvider.CONTENT_URI,
+                "account/" + getUuid() + "/stats");
+
+        String[] projection = {
+                StatsColumns.UNREAD_COUNT,
+        };
+
+        LocalSearch search = new LocalSearch();
+        search.addAllowedFolder(folderName);
+
+        // Use the LocalSearch instance to create a WHERE clause to query the content provider
+        StringBuilder query = new StringBuilder();
+        List<String> queryArgs = new ArrayList<>();
+        ConditionsTreeNode conditions = search.getConditions();
+        SqlQueryBuilder.buildWhereClause(this, conditions, query, queryArgs);
+
+        String selection = query.toString();
+        String[] selectionArgs = queryArgs.toArray(new String[queryArgs.size()]);
+
+        return cr.query(uri, projection, selection, selectionArgs, null);
+    }
+
 
     public synchronized void setChipColor(int color) {
         chipColor = color;
@@ -1036,8 +1081,7 @@ public class Account implements BaseAccount, StoreConfig {
                 folderName.equals(getArchiveFolderName()) ||
                 folderName.equals(getSpamFolderName()) ||
                 folderName.equals(getOutboxFolderName()) ||
-                folderName.equals(getSentFolderName()) ||
-                folderName.equals(getErrorFolderName())));
+                folderName.equals(getSentFolderName())));
     }
 
     public synchronized String getDraftsFolderName() {
@@ -1058,10 +1102,6 @@ public class Account implements BaseAccount, StoreConfig {
 
     public synchronized String getSentFolderName() {
         return sentFolderName;
-    }
-
-    public synchronized String getErrorFolderName() {
-        return K9.ERROR_FOLDER_NAME;
     }
 
     public synchronized void setSentFolderName(String name) {
@@ -1442,6 +1482,11 @@ public class Account implements BaseAccount, StoreConfig {
         return idleRefreshMinutes;
     }
 
+    @Override
+    public boolean shouldHideHostname() {
+        return K9.hideHostnameWhenConnecting();
+    }
+
     public synchronized void setIdleRefreshMinutes(int idleRefreshMinutes) {
         this.idleRefreshMinutes = idleRefreshMinutes;
     }
@@ -1598,6 +1643,14 @@ public class Account implements BaseAccount, StoreConfig {
 
     public void setCryptoKey(long keyId) {
         pgpCryptoKey = keyId;
+    }
+
+    public boolean getAutocryptPreferEncryptMutual() {
+        return autocryptPreferEncryptMutual;
+    }
+
+    public void setAutocryptPreferEncryptMutual(boolean autocryptPreferEncryptMutual) {
+        this.autocryptPreferEncryptMutual = autocryptPreferEncryptMutual;
     }
 
     public boolean allowRemoteSearch() {
@@ -1763,7 +1816,6 @@ public class Account implements BaseAccount, StoreConfig {
         excludeSpecialFolder(search, getSpamFolderName());
         excludeSpecialFolder(search, getOutboxFolderName());
         excludeSpecialFolder(search, getSentFolderName());
-        excludeSpecialFolder(search, getErrorFolderName());
         search.or(new SearchCondition(SearchField.FOLDER, Attribute.EQUALS, getInboxFolderName()));
     }
 

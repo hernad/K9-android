@@ -2,16 +2,18 @@
 package com.fsck.k9.mail;
 
 import android.support.annotation.VisibleForTesting;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.james.mime4j.MimeException;
+import org.apache.james.mime4j.codec.DecodeMonitor;
 import org.apache.james.mime4j.codec.EncoderUtil;
 import org.apache.james.mime4j.dom.address.Mailbox;
 import org.apache.james.mime4j.dom.address.MailboxList;
-import org.apache.james.mime4j.field.address.AddressBuilder;
+import org.apache.james.mime4j.field.address.DefaultAddressParser;
 import timber.log.Timber;
 
 import android.text.TextUtils;
@@ -29,7 +31,6 @@ public class Address implements Serializable {
     private String mAddress;
 
     private String mPersonal;
-
 
     public Address(Address address) {
         mAddress = address.mAddress;
@@ -63,7 +64,7 @@ public class Address implements Serializable {
                     mPersonal = (personal == null) ? null : personal.trim();
                 }
             } else {
-                // This should be an error
+                Timber.e("Invalid address: %s", address);
             }
         } else {
             mAddress = address;
@@ -140,18 +141,13 @@ public class Address implements Serializable {
         if (TextUtils.isEmpty(addressList)) {
             return EMPTY_ADDRESS_ARRAY;
         }
-        List<Address> addresses = new ArrayList<Address>();
+        List<Address> addresses = new ArrayList<>();
         try {
-            MailboxList parsedList =  AddressBuilder.DEFAULT.parseAddressList(addressList).flatten();
+            MailboxList parsedList =  DefaultAddressParser.DEFAULT.parseAddressList(addressList, DecodeMonitor.SILENT).flatten();
 
             for (int i = 0, count = parsedList.size(); i < count; i++) {
-                org.apache.james.mime4j.dom.address.Address address = parsedList.get(i);
-                if (address instanceof Mailbox) {
-                    Mailbox mailbox = (Mailbox) address;
-                    addresses.add(new Address(mailbox.getLocalPart() + "@" + mailbox.getDomain(), mailbox.getName(), false));
-                } else {
-                    Timber.e("Unknown address type from Mime4J: %s", address.getClass().toString());
-                }
+                Mailbox mailbox = parsedList.get(i);
+                addresses.add(new Address(mailbox.getLocalPart() + "@" + mailbox.getDomain(), mailbox.getName(), false));
             }
         } catch (MimeException pe) {
             Timber.e(pe, "MimeException in Address.parse()");

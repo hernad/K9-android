@@ -31,7 +31,8 @@ public class Contacts {
     protected static final String PROJECTION[] = {
             ContactsContract.CommonDataKinds.Email._ID,
             ContactsContract.Contacts.DISPLAY_NAME,
-            ContactsContract.CommonDataKinds.Email.CONTACT_ID
+            ContactsContract.CommonDataKinds.Email.CONTACT_ID,
+            Photo.PHOTO_URI
     };
 
     /**
@@ -91,7 +92,7 @@ public class Contacts {
         contactIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         contactIntent.setData(contactUri);
 
-        // Pass along full E-mail string for possible create dialog
+        // Pass along full email string for possible create dialog
         contactIntent.putExtra(ContactsContract.Intents.EXTRA_CREATE_DESCRIPTION,
                 email.toString());
 
@@ -238,7 +239,10 @@ public class Contacts {
                 if (!c.moveToFirst()) {
                     return null;
                 }
-                final String uriString = c.getString(c.getColumnIndex(Photo.PHOTO_URI));
+                int columnIndex = c.getColumnIndex(Photo.PHOTO_URI);
+                final String uriString = c.getString(columnIndex);
+                if (uriString == null)
+                    return null;
                 return Uri.parse(uriString);
             } catch (IllegalStateException e) {
                 return null;
@@ -261,13 +265,12 @@ public class Contacts {
      */
     private Cursor getContactByAddress(final String address) {
         final Uri uri = Uri.withAppendedPath(ContactsContract.CommonDataKinds.Email.CONTENT_LOOKUP_URI, Uri.encode(address));
-        final Cursor c = mContentResolver.query(
+        return mContentResolver.query(
                 uri,
                 PROJECTION,
                 null,
                 null,
                 SORT_ORDER);
-        return c;
     }
 
 }

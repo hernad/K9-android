@@ -1,6 +1,7 @@
 package com.fsck.k9.mailstore;
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,6 +16,7 @@ import com.fsck.k9.mail.Part;
 import com.fsck.k9.mail.internet.MimeBodyPart;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.internet.MimeMultipart;
+import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mailstore.util.FileFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.james.mime4j.MimeException;
@@ -31,13 +33,14 @@ public class MimePartStreamParser {
             throws MessagingException, IOException {
         MimeBodyPart parsedRootPart = new MimeBodyPart();
 
-        MimeConfig parserConfig  = new MimeConfig();
-        parserConfig.setMaxHeaderLen(-1);
-        parserConfig.setMaxLineLen(-1);
-        parserConfig.setMaxHeaderCount(-1);
+        MimeConfig parserConfig  = new MimeConfig.Builder()
+                .setMaxHeaderLen(-1)
+                .setMaxLineLen(-1)
+                .setMaxHeaderCount(-1)
+                .build();
 
         MimeStreamParser parser = new MimeStreamParser(parserConfig);
-        parser.setContentHandler(new PartBuilder(fileFactory, parsedRootPart));
+        parser.setContentHandler(new PartBuilder(parser, fileFactory, parsedRootPart));
         parser.setRecurse();
 
         try {
@@ -64,12 +67,17 @@ public class MimePartStreamParser {
 
 
     private static class PartBuilder implements ContentHandler {
+        private MimeStreamParser parser;
         private final FileFactory fileFactory;
         private final MimeBodyPart decryptedRootPart;
         private final Stack<Object> stack = new Stack<>();
 
-        public PartBuilder(FileFactory fileFactory, MimeBodyPart decryptedRootPart)
-                throws MessagingException {
+        private boolean isMessagePart;
+        private boolean isContentDispositionAttachment;
+
+        PartBuilder(MimeStreamParser parser, FileFactory fileFactory,
+                MimeBodyPart decryptedRootPart) {
+            this.parser = parser;
             this.fileFactory = fileFactory;
             this.decryptedRootPart = decryptedRootPart;
         }
@@ -110,11 +118,13 @@ public class MimePartStreamParser {
         @Override
         public void endBodyPart() throws MimeException {
             stack.pop();
+            parser.setRecurse();
         }
 
         @Override
         public void startHeader() throws MimeException {
-            // Do nothing
+            isMessagePart = false;
+            isContentDispositionAttachment = false;
         }
 
         @Override
@@ -124,21 +134,38 @@ public class MimePartStreamParser {
 
             Part part = (Part) stack.peek();
             part.addRawHeader(name, raw);
+
+            String fieldImmediateValue = MimeUtility.getHeaderParameter(parsedField.getBody(), null);
+            if ("Content-Type".equalsIgnoreCase(name) && MimeUtility.isMessage(fieldImmediateValue)) {
+                isMessagePart = true;
+            }
+
+            if ("Content-Disposition".equalsIgnoreCase(name) && "attachment".equalsIgnoreCase(fieldImmediateValue)) {
+                isContentDispositionAttachment = true;
+            }
         }
 
         @Override
         public void endHeader() throws MimeException {
-            // Do nothing
+            if (isMessagePart && isContentDispositionAttachment) {
+                parser.setFlat();
+            }
         }
 
         @Override
         public void preamble(InputStream is) throws MimeException, IOException {
-            // Do nothing
+            expect(MimeMultipart.class);
+            ByteArrayOutputStream preamble = new ByteArrayOutputStream();
+            IOUtils.copy(is, preamble);
+            ((MimeMultipart)stack.peek()).setPreamble(preamble.toByteArray());
         }
 
         @Override
         public void epilogue(InputStream is) throws MimeException, IOException {
-            // Do nothing
+            expect(MimeMultipart.class);
+            ByteArrayOutputStream epilogue = new ByteArrayOutputStream();
+            IOUtils.copy(is, epilogue);
+            ((MimeMultipart) stack.peek()).setEpilogue(epilogue.toByteArray());
         }
 
         @Override
@@ -172,6 +199,13 @@ public class MimePartStreamParser {
         @Override
         public void raw(InputStream is) throws MimeException, IOException {
             throw new IllegalStateException("Not implemented");
+        }
+
+        private void expect(Class<?> c) {
+            if (!c.isInstance(stack.peek())) {
+                throw new IllegalStateException("Internal stack error: " + "Expected '"
+                        + c.getName() + "' found '" + stack.peek().getClass().getName() + "'");
+            }
         }
     }
 }

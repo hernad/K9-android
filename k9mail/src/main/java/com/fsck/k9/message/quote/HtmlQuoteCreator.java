@@ -8,7 +8,6 @@ import android.content.res.Resources;
 import timber.log.Timber;
 
 import com.fsck.k9.Account.QuoteStyle;
-import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
@@ -46,7 +45,7 @@ public class HtmlQuoteCreator {
      * @throws MessagingException
      */
     public static InsertableHtmlContent quoteOriginalHtmlMessage(Resources resources, Message originalMessage,
-            String messageBody, QuoteStyle quoteStyle) throws MessagingException {
+            String messageBody, QuoteStyle quoteStyle) {
         InsertableHtmlContent insertable = findInsertionPoints(messageBody);
 
         String sentDate = QuoteHelper.getSentDateText(resources, originalMessage);

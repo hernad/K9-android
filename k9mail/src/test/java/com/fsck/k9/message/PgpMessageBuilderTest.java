@@ -23,6 +23,8 @@ import com.fsck.k9.activity.compose.ComposeCryptoStatus.ComposeCryptoStatusBuild
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoProviderState;
 import com.fsck.k9.activity.misc.Attachment;
+import com.fsck.k9.autocrypt.AutocryptOpenPgpApiInteractor;
+import com.fsck.k9.autocrypt.AutocryptOperations;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.BodyPart;
 import com.fsck.k9.mail.BoundaryGenerator;
@@ -36,11 +38,11 @@ import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.message.MessageBuilder.Callback;
 import com.fsck.k9.message.quote.InsertableHtmlContent;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
-
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.james.mime4j.util.MimeUtil;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -49,6 +51,9 @@ import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpApi.OpenPgpDataSource;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.fsck.k9.autocrypt.AutocryptOperationsHelper.assertMessageHasAutocryptHeader;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
@@ -62,41 +67,110 @@ import static org.mockito.Mockito.when;
 
 @RunWith(K9RobolectricTestRunner.class)
 public class PgpMessageBuilderTest {
-    private static final long TEST_SIGN_KEY_ID = 123L;
-    private static final long TEST_SELF_ENCRYPT_KEY_ID = 234L;
+    private static final long TEST_KEY_ID = 123L;
     private static final String TEST_MESSAGE_TEXT = "message text with a ☭ CCCP symbol";
+    private static final byte[] AUTOCRYPT_KEY_MATERIAL = { 1, 2, 3 };
+    private static final String SENDER_EMAIL = "test@example.org";
 
 
     private ComposeCryptoStatusBuilder cryptoStatusBuilder = createDefaultComposeCryptoStatusBuilder();
     private OpenPgpApi openPgpApi = mock(OpenPgpApi.class);
-    private PgpMessageBuilder pgpMessageBuilder = createDefaultPgpMessageBuilder(openPgpApi);
+    private AutocryptOpenPgpApiInteractor autocryptOpenPgpApiInteractor = mock(AutocryptOpenPgpApiInteractor.class);
+    private PgpMessageBuilder pgpMessageBuilder = createDefaultPgpMessageBuilder(openPgpApi, autocryptOpenPgpApiInteractor);
 
-
-    @Test(expected = AssertionError.class)
-    public void build__withDisabledCrypto__shouldError() throws MessagingException {
-        pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.setCryptoMode(CryptoMode.DISABLE).build());
-
-        pgpMessageBuilder.buildAsync(mock(Callback.class));
+    @Before
+    public void setUp() throws Exception {
+        when(autocryptOpenPgpApiInteractor.getKeyMaterialForKeyId(openPgpApi, TEST_KEY_ID, SENDER_EMAIL))
+                .thenReturn(AUTOCRYPT_KEY_MATERIAL);
     }
 
     @Test
-    public void build__withCryptoProviderNotOk__shouldThrow() throws MessagingException {
-        cryptoStatusBuilder.setCryptoMode(CryptoMode.SIGN_ONLY);
-        CryptoProviderState[] cryptoProviderStates = {
-                CryptoProviderState.LOST_CONNECTION, CryptoProviderState.UNCONFIGURED,
-                CryptoProviderState.UNINITIALIZED, CryptoProviderState.ERROR
-        };
+    public void build__withCryptoProviderUnconfigured__shouldThrow() throws MessagingException {
+        cryptoStatusBuilder.setCryptoMode(CryptoMode.NO_CHOICE);
 
-        for (CryptoProviderState state : cryptoProviderStates) {
-            cryptoStatusBuilder.setCryptoProviderState(state);
-            pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.build());
+        cryptoStatusBuilder.setCryptoProviderState(CryptoProviderState.UNCONFIGURED);
+        pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.build());
 
-            Callback mockCallback = mock(Callback.class);
-            pgpMessageBuilder.buildAsync(mockCallback);
+        Callback mockCallback = mock(Callback.class);
+        pgpMessageBuilder.buildAsync(mockCallback);
 
-            verify(mockCallback).onMessageBuildException(any(MessagingException.class));
-            verifyNoMoreInteractions(mockCallback);
-        }
+        verify(mockCallback).onMessageBuildException(any(MessagingException.class));
+        verifyNoMoreInteractions(mockCallback);
+    }
+
+    @Test
+    public void build__withCryptoProviderUninitialized__shouldThrow() throws MessagingException {
+        cryptoStatusBuilder.setCryptoMode(CryptoMode.NO_CHOICE);
+
+        cryptoStatusBuilder.setCryptoProviderState(CryptoProviderState.UNINITIALIZED);
+        pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.build());
+
+        Callback mockCallback = mock(Callback.class);
+        pgpMessageBuilder.buildAsync(mockCallback);
+
+        verify(mockCallback).onMessageBuildException(any(MessagingException.class));
+        verifyNoMoreInteractions(mockCallback);
+    }
+
+    @Test
+    public void build__withCryptoProviderError__shouldThrow() throws MessagingException {
+        cryptoStatusBuilder.setCryptoMode(CryptoMode.NO_CHOICE);
+
+        cryptoStatusBuilder.setCryptoProviderState(CryptoProviderState.ERROR);
+        pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.build());
+
+        Callback mockCallback = mock(Callback.class);
+        pgpMessageBuilder.buildAsync(mockCallback);
+
+        verify(mockCallback).onMessageBuildException(any(MessagingException.class));
+        verifyNoMoreInteractions(mockCallback);
+    }
+
+    @Test
+    public void build__withCryptoProviderLostConnection__shouldThrow() throws MessagingException {
+        cryptoStatusBuilder.setCryptoMode(CryptoMode.NO_CHOICE);
+
+        cryptoStatusBuilder.setCryptoProviderState(CryptoProviderState.LOST_CONNECTION);
+        pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.build());
+
+        Callback mockCallback = mock(Callback.class);
+        pgpMessageBuilder.buildAsync(mockCallback);
+
+        verify(mockCallback).onMessageBuildException(any(MessagingException.class));
+        verifyNoMoreInteractions(mockCallback);
+    }
+
+    @Test
+    public void buildCleartext__withNoSigningKey__shouldBuildTrivialMessage() {
+        cryptoStatusBuilder.setCryptoMode(CryptoMode.NO_CHOICE);
+        cryptoStatusBuilder.setOpenPgpKeyId(null);
+        pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.build());
+
+        Callback mockCallback = mock(Callback.class);
+        pgpMessageBuilder.buildAsync(mockCallback);
+
+        ArgumentCaptor<MimeMessage> captor = ArgumentCaptor.forClass(MimeMessage.class);
+        verify(mockCallback).onMessageBuildSuccess(captor.capture(), eq(false));
+        verifyNoMoreInteractions(mockCallback);
+
+        MimeMessage message = captor.getValue();
+        assertEquals("text/plain", message.getMimeType());
+    }
+
+    @Test
+    public void buildCleartext__shouldSucceed() {
+        cryptoStatusBuilder.setCryptoMode(CryptoMode.NO_CHOICE);
+        pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.build());
+
+        Callback mockCallback = mock(Callback.class);
+        pgpMessageBuilder.buildAsync(mockCallback);
+
+        ArgumentCaptor<MimeMessage> captor = ArgumentCaptor.forClass(MimeMessage.class);
+        verify(mockCallback).onMessageBuildSuccess(captor.capture(), eq(false));
+        verifyNoMoreInteractions(mockCallback);
+
+        MimeMessage message = captor.getValue();
+        assertMessageHasAutocryptHeader(message, SENDER_EMAIL, false, AUTOCRYPT_KEY_MATERIAL);
     }
 
     @Test
@@ -133,7 +207,7 @@ public class PgpMessageBuilderTest {
         pgpMessageBuilder.buildAsync(mockCallback);
 
         Intent expectedIntent = new Intent(OpenPgpApi.ACTION_DETACHED_SIGN);
-        expectedIntent.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, TEST_SIGN_KEY_ID);
+        expectedIntent.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, TEST_KEY_ID);
         expectedIntent.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
         assertIntentEqualsActionAndExtras(expectedIntent, capturedApiIntent.getValue());
 
@@ -150,7 +224,7 @@ public class PgpMessageBuilderTest {
         BodyPart contentBodyPart = multipart.getBodyPart(0);
         Assert.assertEquals("first part must have content type text/plain",
                 "text/plain", MimeUtility.getHeaderParameter(contentBodyPart.getContentType(), null));
-        Assert.assertTrue("signed message body must be TextBody", contentBodyPart.getBody() instanceof TextBody);
+        assertTrue("signed message body must be TextBody", contentBodyPart.getBody() instanceof TextBody);
         Assert.assertEquals(MimeUtil.ENC_QUOTED_PRINTABLE, ((TextBody) contentBodyPart.getBody()).getEncoding());
         assertContentOfBodyPartEquals("content must match the message text", contentBodyPart, TEST_MESSAGE_TEXT);
 
@@ -162,6 +236,8 @@ public class PgpMessageBuilderTest {
                 MimeUtility.getHeaderParameter(contentType, "name"));
         assertContentOfBodyPartEquals("content must match the supplied detached signature",
                 signatureBodyPart, new byte[] { 1, 2, 3 });
+
+        assertMessageHasAutocryptHeader(message, SENDER_EMAIL, false, AUTOCRYPT_KEY_MATERIAL);
     }
 
     @Test
@@ -238,7 +314,7 @@ public class PgpMessageBuilderTest {
     @Test
     public void buildEncrypt__withoutRecipients__shouldThrow() throws MessagingException {
         cryptoStatusBuilder
-                .setCryptoMode(CryptoMode.OPPORTUNISTIC)
+                .setCryptoMode(CryptoMode.CHOICE_ENABLED)
                 .setRecipients(new ArrayList<Recipient>());
         pgpMessageBuilder.setCryptoStatus(cryptoStatusBuilder.build());
 
@@ -255,9 +331,69 @@ public class PgpMessageBuilderTest {
     }
 
     @Test
+    public void buildEncrypt__checkGossip() throws MessagingException {
+        ComposeCryptoStatus cryptoStatus = cryptoStatusBuilder
+                .setCryptoMode(CryptoMode.CHOICE_ENABLED)
+                .setRecipients(Arrays.asList(
+                        new Recipient("alice", "alice@example.org", "alice", -1, "key"),
+                        new Recipient("bob", "bob@example.org", "bob", -1, "key2")))
+                .build();
+        pgpMessageBuilder.setCryptoStatus(cryptoStatus);
+
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+        when(openPgpApi.executeApi(any(Intent.class), any(OpenPgpDataSource.class), any(OutputStream.class))).thenReturn(returnIntent);
+        pgpMessageBuilder.buildAsync(mock(Callback.class));
+
+        verify(autocryptOpenPgpApiInteractor).getKeyMaterialForUserId(same(openPgpApi), eq("alice@example.org"));
+        verify(autocryptOpenPgpApiInteractor).getKeyMaterialForUserId(same(openPgpApi), eq("bob@example.org"));
+    }
+
+    @Test
+    public void buildEncrypt__checkGossip__filterBcc() throws MessagingException {
+        ComposeCryptoStatus cryptoStatus = cryptoStatusBuilder
+                .setCryptoMode(CryptoMode.CHOICE_ENABLED)
+                .setRecipients(Arrays.asList(
+                        new Recipient("alice", "alice@example.org", "alice", -1, "key"),
+                        new Recipient("bob", "bob@example.org", "bob", -1, "key2"),
+                        new Recipient("carol", "carol@example.org", "carol", -1, "key3")))
+                .build();
+        pgpMessageBuilder.setCryptoStatus(cryptoStatus);
+        pgpMessageBuilder.setBcc(Collections.singletonList(new Address("carol@example.org")));
+
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+        when(openPgpApi.executeApi(any(Intent.class), any(OpenPgpDataSource.class), any(OutputStream.class))).thenReturn(returnIntent);
+        pgpMessageBuilder.buildAsync(mock(Callback.class));
+
+        verify(autocryptOpenPgpApiInteractor).getKeyMaterialForUserId(same(openPgpApi), eq("alice@example.org"));
+        verify(autocryptOpenPgpApiInteractor).getKeyMaterialForUserId(same(openPgpApi), eq("bob@example.org"));
+    }
+
+    @Test
+    public void buildEncrypt__checkGossip__filterBccSingleRecipient() throws MessagingException {
+        ComposeCryptoStatus cryptoStatus = cryptoStatusBuilder
+                .setCryptoMode(CryptoMode.CHOICE_ENABLED)
+                .setRecipients(Arrays.asList(
+                        new Recipient("alice", "alice@example.org", "alice", -1, "key"),
+                        new Recipient("carol", "carol@example.org", "carol", -1, "key3")))
+                .build();
+        pgpMessageBuilder.setCryptoStatus(cryptoStatus);
+        pgpMessageBuilder.setBcc(Collections.singletonList(new Address("carol@example.org")));
+
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+        when(openPgpApi.executeApi(any(Intent.class), any(OpenPgpDataSource.class), any(OutputStream.class))).thenReturn(returnIntent);
+        pgpMessageBuilder.buildAsync(mock(Callback.class));
+
+        verify(autocryptOpenPgpApiInteractor).getKeyMaterialForKeyId(any(OpenPgpApi.class), any(Long.class), any(String.class));
+        verifyNoMoreInteractions(autocryptOpenPgpApiInteractor);
+    }
+
+    @Test
     public void buildEncrypt__shouldSucceed() throws MessagingException {
         ComposeCryptoStatus cryptoStatus = cryptoStatusBuilder
-                .setCryptoMode(CryptoMode.PRIVATE)
+                .setCryptoMode(CryptoMode.CHOICE_ENABLED)
                 .setRecipients(Collections.singletonList(new Recipient("test", "test@example.org", "labru", -1, "key")))
                 .build();
         pgpMessageBuilder.setCryptoStatus(cryptoStatus);
@@ -274,10 +410,9 @@ public class PgpMessageBuilderTest {
         pgpMessageBuilder.buildAsync(mockCallback);
 
         Intent expectedApiIntent = new Intent(OpenPgpApi.ACTION_SIGN_AND_ENCRYPT);
-        expectedApiIntent.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, TEST_SIGN_KEY_ID);
-        expectedApiIntent.putExtra(OpenPgpApi.EXTRA_KEY_IDS, new long[] { TEST_SELF_ENCRYPT_KEY_ID });
+        expectedApiIntent.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, TEST_KEY_ID);
+        expectedApiIntent.putExtra(OpenPgpApi.EXTRA_KEY_IDS, new long[] { TEST_KEY_ID });
         expectedApiIntent.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
-        expectedApiIntent.putExtra(OpenPgpApi.EXTRA_ENCRYPT_OPPORTUNISTIC, false);
         expectedApiIntent.putExtra(OpenPgpApi.EXTRA_USER_IDS, cryptoStatus.getRecipientAddresses());
         assertIntentEqualsActionAndExtras(expectedApiIntent, capturedApiIntent.getValue());
 
@@ -301,15 +436,17 @@ public class PgpMessageBuilderTest {
         BodyPart encryptedBodyPart = multipart.getBodyPart(1);
         Assert.assertEquals("second part must be octet-stream of encrypted data",
                 "application/octet-stream; name=\"encrypted.asc\"", encryptedBodyPart.getContentType());
-        Assert.assertTrue("message body must be BinaryTempFileBody",
+        assertTrue("message body must be BinaryTempFileBody",
                 encryptedBodyPart.getBody() instanceof BinaryTempFileBody);
         Assert.assertEquals(MimeUtil.ENC_7BIT, ((BinaryTempFileBody) encryptedBodyPart.getBody()).getEncoding());
+
+        assertMessageHasAutocryptHeader(message, SENDER_EMAIL, false, AUTOCRYPT_KEY_MATERIAL);
     }
 
     @Test
     public void buildEncrypt__withInlineEnabled__shouldSucceed() throws MessagingException {
         ComposeCryptoStatus cryptoStatus = cryptoStatusBuilder
-                .setCryptoMode(CryptoMode.PRIVATE)
+                .setCryptoMode(CryptoMode.CHOICE_ENABLED)
                 .setRecipients(Collections.singletonList(new Recipient("test", "test@example.org", "labru", -1, "key")))
                 .setEnablePgpInline(true)
                 .build();
@@ -327,10 +464,9 @@ public class PgpMessageBuilderTest {
         pgpMessageBuilder.buildAsync(mockCallback);
 
         Intent expectedApiIntent = new Intent(OpenPgpApi.ACTION_SIGN_AND_ENCRYPT);
-        expectedApiIntent.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, TEST_SIGN_KEY_ID);
-        expectedApiIntent.putExtra(OpenPgpApi.EXTRA_KEY_IDS, new long[] { TEST_SELF_ENCRYPT_KEY_ID });
+        expectedApiIntent.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, TEST_KEY_ID);
+        expectedApiIntent.putExtra(OpenPgpApi.EXTRA_KEY_IDS, new long[] { TEST_KEY_ID });
         expectedApiIntent.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
-        expectedApiIntent.putExtra(OpenPgpApi.EXTRA_ENCRYPT_OPPORTUNISTIC, false);
         expectedApiIntent.putExtra(OpenPgpApi.EXTRA_USER_IDS, cryptoStatus.getRecipientAddresses());
         assertIntentEqualsActionAndExtras(expectedApiIntent, capturedApiIntent.getValue());
 
@@ -340,8 +476,10 @@ public class PgpMessageBuilderTest {
 
         MimeMessage message = captor.getValue();
         Assert.assertEquals("text/plain", message.getMimeType());
-        Assert.assertTrue("message body must be BinaryTempFileBody", message.getBody() instanceof BinaryTempFileBody);
+        assertTrue("message body must be BinaryTempFileBody", message.getBody() instanceof BinaryTempFileBody);
         Assert.assertEquals(MimeUtil.ENC_7BIT, ((BinaryTempFileBody) message.getBody()).getEncoding());
+
+        assertMessageHasAutocryptHeader(message, SENDER_EMAIL, false, AUTOCRYPT_KEY_MATERIAL);
     }
 
     @Test
@@ -365,7 +503,7 @@ public class PgpMessageBuilderTest {
         pgpMessageBuilder.buildAsync(mockCallback);
 
         Intent expectedApiIntent = new Intent(OpenPgpApi.ACTION_SIGN);
-        expectedApiIntent.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, TEST_SIGN_KEY_ID);
+        expectedApiIntent.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, TEST_KEY_ID);
         expectedApiIntent.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
         assertIntentEqualsActionAndExtras(expectedApiIntent, capturedApiIntent.getValue());
 
@@ -375,6 +513,8 @@ public class PgpMessageBuilderTest {
 
         MimeMessage message = captor.getValue();
         Assert.assertEquals("message must be text/plain", "text/plain", message.getMimeType());
+
+        assertMessageHasAutocryptHeader(message, SENDER_EMAIL, false, AUTOCRYPT_KEY_MATERIAL);
     }
 
     @Test
@@ -384,7 +524,7 @@ public class PgpMessageBuilderTest {
                 .setEnablePgpInline(true)
                 .build();
         pgpMessageBuilder.setCryptoStatus(cryptoStatus);
-        pgpMessageBuilder.setAttachments(Collections.singletonList(Attachment.createAttachment(null, 0, null)));
+        pgpMessageBuilder.setAttachments(Collections.singletonList(Attachment.createAttachment(null, 0, null, true)));
 
         Callback mockCallback = mock(Callback.class);
         pgpMessageBuilder.buildAsync(mockCallback);
@@ -397,11 +537,11 @@ public class PgpMessageBuilderTest {
     @Test
     public void buildEncryptWithAttach__withInlineEnabled__shouldThrow() throws MessagingException {
         ComposeCryptoStatus cryptoStatus = cryptoStatusBuilder
-                .setCryptoMode(CryptoMode.OPPORTUNISTIC)
+                .setCryptoMode(CryptoMode.CHOICE_ENABLED)
                 .setEnablePgpInline(true)
                 .build();
         pgpMessageBuilder.setCryptoStatus(cryptoStatus);
-        pgpMessageBuilder.setAttachments(Collections.singletonList(Attachment.createAttachment(null, 0, null)));
+        pgpMessageBuilder.setAttachments(Collections.singletonList(Attachment.createAttachment(null, 0, null, true)));
 
         Callback mockCallback = mock(Callback.class);
         pgpMessageBuilder.buildAsync(mockCallback);
@@ -415,7 +555,7 @@ public class PgpMessageBuilderTest {
     public void buildOpportunisticEncrypt__withNoKeysAndNoSignOnly__shouldNotBeSigned() throws MessagingException {
         ComposeCryptoStatus cryptoStatus = cryptoStatusBuilder
                 .setRecipients(Collections.singletonList(new Recipient("test", "test@example.org", "labru", -1, "key")))
-                .setCryptoMode(CryptoMode.OPPORTUNISTIC)
+                .setCryptoMode(CryptoMode.NO_CHOICE)
                 .build();
         pgpMessageBuilder.setCryptoStatus(cryptoStatus);
 
@@ -466,20 +606,22 @@ public class PgpMessageBuilderTest {
     private ComposeCryptoStatusBuilder createDefaultComposeCryptoStatusBuilder() {
         return new ComposeCryptoStatusBuilder()
                 .setEnablePgpInline(false)
-                .setSigningKeyId(TEST_SIGN_KEY_ID)
-                .setSelfEncryptId(TEST_SELF_ENCRYPT_KEY_ID)
+                .setPreferEncryptMutual(false)
+                .setOpenPgpKeyId(TEST_KEY_ID)
                 .setRecipients(new ArrayList<Recipient>())
                 .setCryptoProviderState(CryptoProviderState.OK);
     }
 
-    private static PgpMessageBuilder createDefaultPgpMessageBuilder(OpenPgpApi openPgpApi) {
+    private static PgpMessageBuilder createDefaultPgpMessageBuilder(OpenPgpApi openPgpApi,
+            AutocryptOpenPgpApiInteractor autocryptOpenPgpApiInteractor) {
         PgpMessageBuilder builder = new PgpMessageBuilder(
-                RuntimeEnvironment.application, MessageIdGenerator.getInstance(), BoundaryGenerator.getInstance());
+                RuntimeEnvironment.application, MessageIdGenerator.getInstance(), BoundaryGenerator.getInstance(),
+                AutocryptOperations.getInstance(), autocryptOpenPgpApiInteractor);
         builder.setOpenPgpApi(openPgpApi);
 
         Identity identity = new Identity();
         identity.setName("tester");
-        identity.setEmail("test@example.org");
+        identity.setEmail(SENDER_EMAIL);
         identity.setDescription("test identity");
         identity.setSignatureUse(false);
 
@@ -554,11 +696,11 @@ public class PgpMessageBuilderTest {
             }
             if (intentExtra instanceof long[]) {
                 if (!Arrays.equals((long[]) intentExtra, (long[]) expectedExtra)) {
-                    Assert.assertArrayEquals((long[]) expectedExtra, (long[]) intentExtra);
+                    Assert.assertArrayEquals("error in " + key, (long[]) expectedExtra, (long[]) intentExtra);
                 }
             } else {
                 if (!intentExtra.equals(expectedExtra)) {
-                    Assert.assertEquals(expectedExtra, intentExtra);
+                    Assert.assertEquals("error in " + key, expectedExtra, intentExtra);
                 }
             }
         }

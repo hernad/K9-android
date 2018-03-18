@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.Locale;
 
 import android.content.BroadcastReceiver;
@@ -56,7 +55,7 @@ public class DecryptedFileProvider extends FileProvider {
 
     @Nullable
     public static Uri getUriForProvidedFile(@NonNull Context context, File file,
-            @Nullable String encoding, @Nullable String mimeType) throws IOException {
+            @Nullable String encoding, @Nullable String mimeType) {
         try {
             Uri.Builder uriBuilder = FileProvider.getUriForFile(context, AUTHORITY, file).buildUpon();
             if (mimeType != null) {

@@ -20,12 +20,14 @@ import com.fsck.k9.K9.NotificationHideSubject;
 import com.fsck.k9.K9.NotificationQuickDelete;
 import com.fsck.k9.K9.SplitViewMode;
 import com.fsck.k9.K9.Theme;
+import com.fsck.k9.R;
 import com.fsck.k9.preferences.Settings.BooleanSetting;
 import com.fsck.k9.preferences.Settings.ColorSetting;
 import com.fsck.k9.preferences.Settings.EnumSetting;
 import com.fsck.k9.preferences.Settings.FontSizeSetting;
 import com.fsck.k9.preferences.Settings.IntegerRangeSetting;
 import com.fsck.k9.preferences.Settings.InvalidSettingValueException;
+import com.fsck.k9.preferences.Settings.PseudoEnumSetting;
 import com.fsck.k9.preferences.Settings.SettingsDescription;
 import com.fsck.k9.preferences.Settings.SettingsUpgrader;
 import com.fsck.k9.preferences.Settings.StringSetting;
@@ -144,6 +146,9 @@ public class GlobalSettings {
         s.put("keyguardPrivacy", Settings.versions(
                 new V(1, new BooleanSetting(false)),
                 new V(12, null)
+        ));
+        s.put("language", Settings.versions(
+                new V(1, new LanguageSetting())
         ));
         s.put("measureAccounts", Settings.versions(
                 new V(1, new BooleanSetting(true))
@@ -285,11 +290,17 @@ public class GlobalSettings {
         s.put("pgpSignOnlyDialogCounter", Settings.versions(
                 new V(45, new IntegerRangeSetting(0, Integer.MAX_VALUE, 0))
         ));
-        s.put("openpgpProvider", Settings.versions(
+        s.put("openPgpProvider", Settings.versions(
                 new V(46, new StringSetting(K9.NO_OPENPGP_PROVIDER))
         ));
-        s.put("openpgpSupportSignOnly", Settings.versions(
+        s.put("openPgpSupportSignOnly", Settings.versions(
                 new V(47, new BooleanSetting(false))
+        ));
+        s.put("fontSizeMessageViewBCC", Settings.versions(
+                new V(48, new FontSizeSetting(FontSizes.FONT_DEFAULT))
+        ));
+        s.put("hideHostnameWhenConnecting", Settings.versions(
+                new V(49, new BooleanSetting(false))
         ));
 
         SETTINGS = Collections.unmodifiableMap(s);
@@ -408,6 +419,39 @@ public class GlobalSettings {
                     return 100;
                 }
             }
+        }
+    }
+
+    private static class LanguageSetting extends PseudoEnumSetting<String> {
+        private final Map<String, String> mapping;
+
+        LanguageSetting() {
+            super("");
+
+            Map<String, String> mapping = new HashMap<>();
+            String[] values = K9.app.getResources().getStringArray(R.array.settings_language_values);
+            for (String value : values) {
+                if (value.length() == 0) {
+                    mapping.put("", "default");
+                } else {
+                    mapping.put(value, value);
+                }
+            }
+            this.mapping = Collections.unmodifiableMap(mapping);
+        }
+
+        @Override
+        protected Map<String, String> getMapping() {
+            return mapping;
+        }
+
+        @Override
+        public String fromString(String value) throws InvalidSettingValueException {
+            if (mapping.containsKey(value)) {
+                return value;
+            }
+
+            throw new InvalidSettingValueException();
         }
     }
 

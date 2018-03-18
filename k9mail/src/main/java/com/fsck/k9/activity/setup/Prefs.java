@@ -2,6 +2,11 @@ package com.fsck.k9.activity.setup;
 
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -48,6 +53,7 @@ public class Prefs extends K9PreferenceActivity {
     /*
      * Keys of the preferences defined in res/xml/global_preferences.xml
      */
+    private static final String PREFERENCE_LANGUAGE = "language";
     private static final String PREFERENCE_THEME = "theme";
     private static final String PREFERENCE_MESSAGE_VIEW_THEME = "messageViewTheme";
     private static final String PREFERENCE_FIXED_MESSAGE_THEME = "fixed_message_view_theme";
@@ -86,6 +92,7 @@ public class Prefs extends K9PreferenceActivity {
     private static final String PREFERENCE_LOCK_SCREEN_NOTIFICATION_VISIBILITY = "lock_screen_notification_visibility";
     private static final String PREFERENCE_HIDE_USERAGENT = "privacy_hide_useragent";
     private static final String PREFERENCE_HIDE_TIMEZONE = "privacy_hide_timezone";
+    private static final String PREFERENCE_HIDE_HOSTNAME_WHEN_CONNECTING = "privacy_hide_hostname_when_connecting";
 
     private static final String PREFERENCE_OPENPGP_PROVIDER = "openpgp_provider";
     private static final String PREFERENCE_OPENPGP_SUPPORT_SIGN_ONLY = "openpgp_support_sign_only";
@@ -114,6 +121,7 @@ public class Prefs extends K9PreferenceActivity {
     private static final int VISIBLE_REFILE_ACTIONS_COPY = 3;
     private static final int VISIBLE_REFILE_ACTIONS_SPAM = 4;
 
+    private ListPreference mLanguage;
     private ListPreference mTheme;
     private CheckBoxPreference mFixedMessageTheme;
     private ListPreference mMessageTheme;
@@ -145,6 +153,7 @@ public class Prefs extends K9PreferenceActivity {
     private CheckBoxPreference mSensitiveLogging;
     private CheckBoxPreference mHideUserAgent;
     private CheckBoxPreference mHideTimeZone;
+    private CheckBoxPreference mHideHostnameWhenConnecting;
     private CheckBoxPreference mWrapFolderNames;
     private CheckBoxListPreference mVisibleRefileActions;
 
@@ -174,6 +183,21 @@ public class Prefs extends K9PreferenceActivity {
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.global_preferences);
+
+        mLanguage = (ListPreference) findPreference(PREFERENCE_LANGUAGE);
+        List<CharSequence> entryVector = new ArrayList<CharSequence>(Arrays.asList(mLanguage.getEntries()));
+        List<CharSequence> entryValueVector = new ArrayList<CharSequence>(Arrays.asList(mLanguage.getEntryValues()));
+        String supportedLanguages[] = getResources().getStringArray(R.array.supported_languages);
+        Set<String> supportedLanguageSet = new HashSet<String>(Arrays.asList(supportedLanguages));
+        for (int i = entryVector.size() - 1; i > -1; --i) {
+            if (!supportedLanguageSet.contains(entryValueVector.get(i))) {
+                entryVector.remove(i);
+                entryValueVector.remove(i);
+            }
+        }
+        initListPreference(mLanguage, K9.getK9Language(),
+                           entryVector.toArray(EMPTY_CHAR_SEQUENCE_ARRAY),
+                           entryValueVector.toArray(EMPTY_CHAR_SEQUENCE_ARRAY));
 
         mTheme = setupListPreference(PREFERENCE_THEME, themeIdToName(K9.getK9Theme()));
         mFixedMessageTheme = (CheckBoxPreference) findPreference(PREFERENCE_FIXED_MESSAGE_THEME);
@@ -356,11 +380,13 @@ public class Prefs extends K9PreferenceActivity {
         mSensitiveLogging = (CheckBoxPreference)findPreference(PREFERENCE_SENSITIVE_LOGGING);
         mHideUserAgent = (CheckBoxPreference)findPreference(PREFERENCE_HIDE_USERAGENT);
         mHideTimeZone = (CheckBoxPreference)findPreference(PREFERENCE_HIDE_TIMEZONE);
+        mHideHostnameWhenConnecting = (CheckBoxPreference)findPreference(PREFERENCE_HIDE_HOSTNAME_WHEN_CONNECTING);
 
         mDebugLogging.setChecked(K9.isDebug());
         mSensitiveLogging.setChecked(K9.DEBUG_SENSITIVE);
         mHideUserAgent.setChecked(K9.hideUserAgent());
         mHideTimeZone.setChecked(K9.hideTimeZone());
+        mHideHostnameWhenConnecting.setChecked(K9.hideHostnameWhenConnecting());
 
         mOpenPgpProvider = (OpenPgpAppPreference) findPreference(PREFERENCE_OPENPGP_PROVIDER);
         mOpenPgpProvider.setValue(K9.getOpenPgpProvider());
@@ -461,6 +487,8 @@ public class Prefs extends K9PreferenceActivity {
     private void saveSettings() {
         Storage storage = Preferences.getPreferences(this).getStorage();
 
+        K9.setK9Language(mLanguage.getValue());
+
         K9.setK9Theme(themeNameToId(mTheme.getValue()));
         K9.setUseFixedMessageViewTheme(mFixedMessageTheme.isChecked());
         K9.setK9MessageViewThemeSetting(themeNameToId(mMessageTheme.getValue()));
@@ -536,6 +564,7 @@ public class Prefs extends K9PreferenceActivity {
         K9.DEBUG_SENSITIVE = mSensitiveLogging.isChecked();
         K9.setHideUserAgent(mHideUserAgent.isChecked());
         K9.setHideTimeZone(mHideTimeZone.isChecked());
+        K9.setHideHostnameWhenConnecting(mHideHostnameWhenConnecting.isChecked());
 
         K9.setOpenPgpProvider(mOpenPgpProvider.getValue());
         K9.setOpenPgpSupportSignOnly(mOpenPgpSupportSignOnly.isChecked());

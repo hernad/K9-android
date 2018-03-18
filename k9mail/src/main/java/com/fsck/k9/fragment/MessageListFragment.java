@@ -788,6 +788,10 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         fragmentListener.onForward(messageReference);
     }
 
+    public void onForwardAsAttachment(MessageReference messageReference) {
+        fragmentListener.onForwardAsAttachment(messageReference);
+    }
+
     private void onResendMessage(MessageReference messageReference) {
         fragmentListener.onResendMessage(messageReference);
     }
@@ -1116,6 +1120,10 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
                 onForward(getMessageAtPosition(adapterPosition));
                 break;
             }
+            case R.id.forward_as_attachment: {
+                onForwardAsAttachment(getMessageAtPosition(adapterPosition));
+                break;
+            }
             case R.id.send_again: {
                 onResendMessage(getMessageAtPosition(adapterPosition));
                 selectedCount = 0;
@@ -1340,10 +1348,11 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         public void remoteSearchServerQueryComplete(String folderName, int numResults, int maxResults) {
             handler.progress(true);
             if (maxResults != 0 && numResults > maxResults) {
-                handler.updateFooter(context.getString(R.string.remote_search_downloading_limited,
-                        maxResults, numResults));
+                handler.updateFooter(context.getResources().getQuantityString(R.plurals.remote_search_downloading_limited,
+                        maxResults, maxResults, numResults));
             } else {
-                handler.updateFooter(context.getString(R.string.remote_search_downloading, numResults));
+                handler.updateFooter(context.getResources().getQuantityString(R.plurals.remote_search_downloading,
+                        numResults, numResults));
             }
             fragmentListener.setMessageListProgress(Window.PROGRESS_START);
         }
@@ -2260,6 +2269,14 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
                 Timber.e(e, "Could not abort remote search before going back");
             }
         }
+
+        // Workaround for Android bug https://issuetracker.google.com/issues/37008170
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(false);
+            swipeRefreshLayout.destroyDrawingCache();
+            swipeRefreshLayout.clearAnimation();
+        }
+
         super.onStop();
     }
 
@@ -2367,6 +2384,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         void showMoreFromSameSender(String senderAddress);
         void onResendMessage(MessageReference message);
         void onForward(MessageReference message);
+        void onForwardAsAttachment(MessageReference message);
         void onReply(MessageReference message);
         void onReplyAll(MessageReference message);
         void openMessage(MessageReference messageReference);
@@ -2493,12 +2511,8 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         return (folderName != null && folderName.equals(account.getOutboxFolderName()));
     }
 
-    private boolean isErrorFolder() {
-        return K9.ERROR_FOLDER_NAME.equals(folderName);
-    }
-
     public boolean isRemoteFolder() {
-        if (search.isManualSearch() || isOutbox() || isErrorFolder()) {
+        if (search.isManualSearch() || isOutbox()) {
             return false;
         }
 
@@ -2913,7 +2927,7 @@ public class MessageListFragment extends Fragment implements OnItemClickListener
         return (isRemoteSearchAllowed() || isCheckMailAllowed());
     }
 
-    LayoutInflater getLayoutInflater() {
+    LayoutInflater getK9LayoutInflater() {
         return layoutInflater;
     }
 }

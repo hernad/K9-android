@@ -12,15 +12,15 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Queue;
 
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
@@ -36,7 +36,9 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.ServerSettings;
+import com.fsck.k9.mail.ServerSettings.Type;
 import com.fsck.k9.mail.Transport;
+import com.fsck.k9.mail.TransportUris;
 import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.filter.EOLConvertingOutputStream;
 import com.fsck.k9.mail.filter.LineWrapOutputStream;
@@ -55,203 +57,76 @@ import static com.fsck.k9.mail.CertificateValidationException.Reason.MissingCapa
 import static com.fsck.k9.mail.K9MailLib.DEBUG_PROTOCOL_SMTP;
 
 public class SmtpTransport extends Transport {
-    public static final int SMTP_CONTINUE_REQUEST = 334;
-    public static final int SMTP_AUTHENTICATION_FAILURE_ERROR_CODE = 535;
-
-    private TrustedSocketFactory mTrustedSocketFactory;
-    private OAuth2TokenProvider oauthTokenProvider;
-
-    /**
-     * Decodes a SmtpTransport URI.
-     *
-     * NOTE: In contrast to ImapStore and Pop3Store, the authType is appended at the end!
-     *
-     * <p>Possible forms:</p>
-     * <pre>
-     * smtp://user:password:auth@server:port ConnectionSecurity.NONE
-     * smtp+tls+://user:password:auth@server:port ConnectionSecurity.STARTTLS_REQUIRED
-     * smtp+ssl+://user:password:auth@server:port ConnectionSecurity.SSL_TLS_REQUIRED
-     * </pre>
-     */
-    public static ServerSettings decodeUri(String uri) {
-        String host;
-        int port;
-        ConnectionSecurity connectionSecurity;
-        AuthType authType = null;
-        String username = null;
-        String password = null;
-        String clientCertificateAlias = null;
-
-        URI smtpUri;
-        try {
-            smtpUri = new URI(uri);
-        } catch (URISyntaxException use) {
-            throw new IllegalArgumentException("Invalid SmtpTransport URI", use);
-        }
-
-        String scheme = smtpUri.getScheme();
-        /*
-         * Currently available schemes are:
-         * smtp
-         * smtp+tls+
-         * smtp+ssl+
-         *
-         * The following are obsolete schemes that may be found in pre-existing
-         * settings from earlier versions or that may be found when imported. We
-         * continue to recognize them and re-map them appropriately:
-         * smtp+tls
-         * smtp+ssl
-         */
-        if (scheme.equals("smtp")) {
-            connectionSecurity = ConnectionSecurity.NONE;
-            port = ServerSettings.Type.SMTP.defaultPort;
-        } else if (scheme.startsWith("smtp+tls")) {
-            connectionSecurity = ConnectionSecurity.STARTTLS_REQUIRED;
-            port = ServerSettings.Type.SMTP.defaultPort;
-        } else if (scheme.startsWith("smtp+ssl")) {
-            connectionSecurity = ConnectionSecurity.SSL_TLS_REQUIRED;
-            port = ServerSettings.Type.SMTP.defaultTlsPort;
-        } else {
-            throw new IllegalArgumentException("Unsupported protocol (" + scheme + ")");
-        }
-
-        host = smtpUri.getHost();
-
-        if (smtpUri.getPort() != -1) {
-            port = smtpUri.getPort();
-        }
-
-        if (smtpUri.getUserInfo() != null) {
-            String[] userInfoParts = smtpUri.getUserInfo().split(":");
-            if (userInfoParts.length == 1) {
-                authType = AuthType.PLAIN;
-                username = decodeUtf8(userInfoParts[0]);
-            } else if (userInfoParts.length == 2) {
-                authType = AuthType.PLAIN;
-                username = decodeUtf8(userInfoParts[0]);
-                password = decodeUtf8(userInfoParts[1]);
-            } else if (userInfoParts.length == 3) {
-                // NOTE: In SmtpTransport URIs, the authType comes last!
-                authType = AuthType.valueOf(userInfoParts[2]);
-                username = decodeUtf8(userInfoParts[0]);
-                if (authType == AuthType.EXTERNAL) {
-                    clientCertificateAlias = decodeUtf8(userInfoParts[1]);
-                } else {
-                    password = decodeUtf8(userInfoParts[1]);
-                }
-            }
-        }
-
-        return new ServerSettings(ServerSettings.Type.SMTP, host, port, connectionSecurity,
-                authType, username, password, clientCertificateAlias);
-    }
-
-    /**
-     * Creates a SmtpTransport URI with the supplied settings.
-     *
-     * @param server
-     *         The {@link ServerSettings} object that holds the server settings.
-     *
-     * @return A SmtpTransport URI that holds the same information as the {@code server} parameter.
-     *
-     * @see com.fsck.k9.mail.store.StoreConfig#getTransportUri()
-     * @see SmtpTransport#decodeUri(String)
-     */
-    public static String createUri(ServerSettings server) {
-        String userEnc = (server.username != null) ?
-                encodeUtf8(server.username) : "";
-        String passwordEnc = (server.password != null) ?
-                encodeUtf8(server.password) : "";
-        String clientCertificateAliasEnc = (server.clientCertificateAlias != null) ?
-                encodeUtf8(server.clientCertificateAlias) : "";
-
-        String scheme;
-        switch (server.connectionSecurity) {
-            case SSL_TLS_REQUIRED:
-                scheme = "smtp+ssl+";
-                break;
-            case STARTTLS_REQUIRED:
-                scheme = "smtp+tls+";
-                break;
-            default:
-            case NONE:
-                scheme = "smtp";
-                break;
-        }
-
-        String userInfo;
-        AuthType authType = server.authenticationType;
-        // NOTE: authType is append at last item, in contrast to ImapStore and Pop3Store!
-        if (authType != null) {
-            if (AuthType.EXTERNAL == authType) {
-                userInfo = userEnc + ":" + clientCertificateAliasEnc + ":" + authType.name();
-            } else {
-                userInfo = userEnc + ":" + passwordEnc + ":" + authType.name();
-            }
-        } else {
-            userInfo = userEnc + ":" + passwordEnc;
-        }
-        try {
-            return new URI(scheme, userInfo, server.host, server.port, null, null,
-                    null).toString();
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("Can't create SmtpTransport URI", e);
-        }
-    }
+    private static final int SMTP_CONTINUE_REQUEST = 334;
+    private static final int SMTP_AUTHENTICATION_FAILURE_ERROR_CODE = 535;
 
 
-    private String mHost;
-    private int mPort;
-    private String mUsername;
-    private String mPassword;
-    private String mClientCertificateAlias;
-    private AuthType mAuthType;
-    private ConnectionSecurity mConnectionSecurity;
-    private Socket mSocket;
-    private PeekableInputStream mIn;
-    private OutputStream mOut;
-    private boolean m8bitEncodingAllowed;
-    private boolean mEnhancedStatusCodesProvided;
-    private int mLargestAcceptableMessage;
+    private final TrustedSocketFactory trustedSocketFactory;
+    private final OAuth2TokenProvider oauthTokenProvider;
+
+    private final String host;
+    private final int port;
+    private final String username;
+    private final String password;
+    private final String clientCertificateAlias;
+    private final AuthType authType;
+    private final ConnectionSecurity connectionSecurity;
+
+
+    private Socket socket;
+    private PeekableInputStream inputStream;
+    private OutputStream outputStream;
+    private boolean is8bitEncodingAllowed;
+    private boolean isEnhancedStatusCodesProvided;
+    private int largestAcceptableMessage;
     private boolean retryXoauthWithNewToken;
+    private boolean isPipeliningSupported;
+    private boolean shouldHideHostname;
+
 
     public SmtpTransport(StoreConfig storeConfig, TrustedSocketFactory trustedSocketFactory,
-            OAuth2TokenProvider oauth2TokenProvider) throws MessagingException {
+            OAuth2TokenProvider oauthTokenProvider) throws MessagingException {
         ServerSettings settings;
         try {
-            settings = decodeUri(storeConfig.getTransportUri());
+            settings = TransportUris.decodeTransportUri(storeConfig.getTransportUri());
         } catch (IllegalArgumentException e) {
             throw new MessagingException("Error while decoding transport URI", e);
         }
 
-        mHost = settings.host;
-        mPort = settings.port;
+        if (settings.type != Type.SMTP) {
+            throw new IllegalArgumentException("Expected SMTP StoreConfig!");
+        }
 
-        mConnectionSecurity = settings.connectionSecurity;
+        host = settings.host;
+        port = settings.port;
 
-        mAuthType = settings.authenticationType;
-        mUsername = settings.username;
-        mPassword = settings.password;
-        mClientCertificateAlias = settings.clientCertificateAlias;
-        mTrustedSocketFactory = trustedSocketFactory;
-        oauthTokenProvider = oauth2TokenProvider;
+        connectionSecurity = settings.connectionSecurity;
+
+        authType = settings.authenticationType;
+        username = settings.username;
+        password = settings.password;
+        clientCertificateAlias = settings.clientCertificateAlias;
+
+        this.trustedSocketFactory = trustedSocketFactory;
+        this.oauthTokenProvider = oauthTokenProvider;
+        this.shouldHideHostname = storeConfig.shouldHideHostname();
     }
 
     @Override
     public void open() throws MessagingException {
         try {
             boolean secureConnection = false;
-            InetAddress[] addresses = InetAddress.getAllByName(mHost);
+            InetAddress[] addresses = InetAddress.getAllByName(host);
             for (int i = 0; i < addresses.length; i++) {
                 try {
-                    SocketAddress socketAddress = new InetSocketAddress(addresses[i], mPort);
-                    if (mConnectionSecurity == ConnectionSecurity.SSL_TLS_REQUIRED) {
-                        mSocket = mTrustedSocketFactory.createSocket(null, mHost, mPort, mClientCertificateAlias);
-                        mSocket.connect(socketAddress, SOCKET_CONNECT_TIMEOUT);
+                    SocketAddress socketAddress = new InetSocketAddress(addresses[i], port);
+                    if (connectionSecurity == ConnectionSecurity.SSL_TLS_REQUIRED) {
+                        socket = trustedSocketFactory.createSocket(null, host, port, clientCertificateAlias);
+                        socket.connect(socketAddress, SOCKET_CONNECT_TIMEOUT);
                         secureConnection = true;
                     } else {
-                        mSocket = new Socket();
-                        mSocket.connect(socketAddress, SOCKET_CONNECT_TIMEOUT);
+                        socket = new Socket();
+                        socket.connect(socketAddress, SOCKET_CONNECT_TIMEOUT);
                     }
                 } catch (SocketException e) {
                     if (i < (addresses.length - 1)) {
@@ -264,56 +139,40 @@ public class SmtpTransport extends Transport {
             }
 
             // RFC 1047
-            mSocket.setSoTimeout(SOCKET_READ_TIMEOUT);
+            socket.setSoTimeout(SOCKET_READ_TIMEOUT);
 
-            mIn = new PeekableInputStream(new BufferedInputStream(mSocket.getInputStream(), 1024));
-            mOut = new BufferedOutputStream(mSocket.getOutputStream(), 1024);
+            inputStream = new PeekableInputStream(new BufferedInputStream(socket.getInputStream(), 1024));
+            outputStream = new BufferedOutputStream(socket.getOutputStream(), 1024);
 
             // Eat the banner
             executeCommand(null);
 
-            InetAddress localAddress = mSocket.getLocalAddress();
-            String localHost = getCanonicalHostName(localAddress);
-            String ipAddr = localAddress.getHostAddress();
+            String hostnameToReportInHelo = buildHostnameToReport();
 
-            if (localHost.equals("") || localHost.equals(ipAddr) || localHost.contains("_")) {
-                // We don't have a FQDN or the hostname contains invalid
-                // characters (see issue 2143), so use IP address.
-                if (!ipAddr.equals("")) {
-                    if (localAddress instanceof Inet6Address) {
-                        localHost = "[IPv6:" + ipAddr + "]";
-                    } else {
-                        localHost = "[" + ipAddr + "]";
-                    }
-                } else {
-                    // If the IP address is no good, set a sane default (see issue 2750).
-                    localHost = "android";
-                }
-            }
+            Map<String, String> extensions = sendHello(hostnameToReportInHelo);
 
-            Map<String, String> extensions = sendHello(localHost);
+            is8bitEncodingAllowed = extensions.containsKey("8BITMIME");
+            isEnhancedStatusCodesProvided = extensions.containsKey("ENHANCEDSTATUSCODES");
+            isPipeliningSupported = extensions.containsKey("PIPELINING");
 
-            m8bitEncodingAllowed = extensions.containsKey("8BITMIME");
-            mEnhancedStatusCodesProvided = extensions.containsKey("ENHANCEDSTATUSCODES");
-
-            if (mConnectionSecurity == ConnectionSecurity.STARTTLS_REQUIRED) {
+            if (connectionSecurity == ConnectionSecurity.STARTTLS_REQUIRED) {
                 if (extensions.containsKey("STARTTLS")) {
                     executeCommand("STARTTLS");
 
-                    mSocket = mTrustedSocketFactory.createSocket(
-                            mSocket,
-                            mHost,
-                            mPort,
-                            mClientCertificateAlias);
+                    socket = trustedSocketFactory.createSocket(
+                            socket,
+                            host,
+                            port,
+                            clientCertificateAlias);
 
-                    mIn = new PeekableInputStream(new BufferedInputStream(mSocket.getInputStream(),
+                    inputStream = new PeekableInputStream(new BufferedInputStream(socket.getInputStream(),
                             1024));
-                    mOut = new BufferedOutputStream(mSocket.getOutputStream(), 1024);
+                    outputStream = new BufferedOutputStream(socket.getOutputStream(), 1024);
                     /*
                      * Now resend the EHLO. Required by RFC2487 Sec. 5.2, and more specifically,
                      * Exim.
                      */
-                    extensions = sendHello(localHost);
+                    extensions = sendHello(hostnameToReportInHelo);
                     secureConnection = true;
                 } else {
                     /*
@@ -343,12 +202,12 @@ public class SmtpTransport extends Transport {
             }
             parseOptionalSizeValue(extensions);
 
-            if (!TextUtils.isEmpty(mUsername)
-                    && (!TextUtils.isEmpty(mPassword) ||
-                    AuthType.EXTERNAL == mAuthType ||
-                    AuthType.XOAUTH2 == mAuthType)) {
+            if (!TextUtils.isEmpty(username)
+                    && (!TextUtils.isEmpty(password) ||
+                    AuthType.EXTERNAL == authType ||
+                    AuthType.XOAUTH2 == authType)) {
 
-                switch (mAuthType) {
+                switch (authType) {
 
                 /*
                  * LOGIN is an obsolete option which is unavailable to users,
@@ -359,9 +218,9 @@ public class SmtpTransport extends Transport {
                     case PLAIN:
                         // try saslAuthPlain first, because it supports UTF-8 explicitly
                         if (authPlainSupported) {
-                            saslAuthPlain(mUsername, mPassword);
+                            saslAuthPlain();
                         } else if (authLoginSupported) {
-                            saslAuthLogin(mUsername, mPassword);
+                            saslAuthLogin();
                         } else {
                             throw new MessagingException(
                                     "Authentication methods SASL PLAIN and LOGIN are unavailable.");
@@ -370,21 +229,21 @@ public class SmtpTransport extends Transport {
 
                     case CRAM_MD5:
                         if (authCramMD5Supported) {
-                            saslAuthCramMD5(mUsername, mPassword);
+                            saslAuthCramMD5();
                         } else {
                             throw new MessagingException("Authentication method CRAM-MD5 is unavailable.");
                         }
                         break;
                     case XOAUTH2:
                         if (authXoauth2Supported && oauthTokenProvider != null) {
-                            saslXoauth2(mUsername);
+                            saslXoauth2();
                         } else {
                             throw new MessagingException("Authentication method XOAUTH2 is unavailable.");
                         }
                         break;
                     case EXTERNAL:
                         if (authExternalSupported) {
-                            saslAuthExternal(mUsername);
+                            saslAuthExternal();
                         } else {
                         /*
                          * Some SMTP servers are known to provide no error
@@ -409,17 +268,17 @@ public class SmtpTransport extends Transport {
                         if (secureConnection) {
                             // try saslAuthPlain first, because it supports UTF-8 explicitly
                             if (authPlainSupported) {
-                                saslAuthPlain(mUsername, mPassword);
+                                saslAuthPlain();
                             } else if (authLoginSupported) {
-                                saslAuthLogin(mUsername, mPassword);
+                                saslAuthLogin();
                             } else if (authCramMD5Supported) {
-                                saslAuthCramMD5(mUsername, mPassword);
+                                saslAuthCramMD5();
                             } else {
                                 throw new MessagingException("No supported authentication methods available.");
                             }
                         } else {
                             if (authCramMD5Supported) {
-                                saslAuthCramMD5(mUsername, mPassword);
+                                saslAuthCramMD5();
                             } else {
                             /*
                              * We refuse to insecurely transmit the password
@@ -454,12 +313,38 @@ public class SmtpTransport extends Transport {
         }
     }
 
+    private String buildHostnameToReport() {
+        if (shouldHideHostname) {
+            return "localhost";
+        }
+        InetAddress localAddress = socket.getLocalAddress();
+        String localHostname = getCanonicalHostName(localAddress);
+        String ipAddr = getHostAddress(localAddress);
+
+        if (localHostname.equals("") || localHostname.equals(ipAddr) || localHostname.contains("_")) {
+            // We don't have a FQDN or the hostname contains invalid
+            // characters (see issue 2143), so use IP address.
+            if (!ipAddr.equals("")) {
+                if (localAddress instanceof Inet6Address) {
+                    return "[IPv6:" + ipAddr + "]";
+                } else {
+                    return "[" + ipAddr + "]";
+                }
+            } else {
+                // If the IP address is no good, set a sane default
+                return "android";
+            }
+        } else {
+            return localHostname;
+        }
+    }
+
     private void parseOptionalSizeValue(Map<String, String> extensions) {
         if (extensions.containsKey("SIZE")) {
             String optionalsizeValue = extensions.get("SIZE");
-            if (optionalsizeValue != null && optionalsizeValue != "") {
+            if (optionalsizeValue != null && !"".equals(optionalsizeValue)) {
                 try {
-                    mLargestAcceptableMessage = Integer.parseInt(optionalsizeValue);
+                    largestAcceptableMessage = Integer.parseInt(optionalsizeValue);
                 } catch (NumberFormatException e) {
                     if (K9MailLib.isDebug() && DEBUG_PROTOCOL_SMTP) {
                         Timber.d(e, "Tried to parse %s and get an int", optionalsizeValue);
@@ -490,7 +375,7 @@ public class SmtpTransport extends Transport {
      *          In case of a malformed response.
      */
     private Map<String, String> sendHello(String host) throws IOException, MessagingException {
-        Map<String, String> extensions = new HashMap<String, String>();
+        Map<String, String> extensions = new HashMap<>();
         try {
             List<String> results = executeCommand("EHLO %s", host).results;
             // Remove the EHLO greeting response
@@ -515,7 +400,7 @@ public class SmtpTransport extends Transport {
 
     @Override
     public void sendMessage(Message message) throws MessagingException {
-        List<Address> addresses = new ArrayList<Address>();
+        List<Address> addresses = new ArrayList<>();
         {
             addresses.addAll(Arrays.asList(message.getRecipients(RecipientType.TO)));
             addresses.addAll(Arrays.asList(message.getRecipients(RecipientType.CC)));
@@ -523,14 +408,13 @@ public class SmtpTransport extends Transport {
         }
         message.setRecipients(RecipientType.BCC, null);
 
-        Map<String, List<String>> charsetAddressesMap =
-            new HashMap<String, List<String>>();
+        Map<String, List<String>> charsetAddressesMap = new HashMap<>();
         for (Address address : addresses) {
             String addressString = address.getAddress();
             String charset = CharsetSupport.getCharsetFromAddress(addressString);
             List<String> addressesOfCharset = charsetAddressesMap.get(charset);
             if (addressesOfCharset == null) {
-                addressesOfCharset = new ArrayList<String>();
+                addressesOfCharset = new ArrayList<>();
                 charsetAddressesMap.put(charset, addressesOfCharset);
             }
             addressesOfCharset.add(addressString);
@@ -546,39 +430,46 @@ public class SmtpTransport extends Transport {
     }
 
     private void sendMessageTo(List<String> addresses, Message message)
-    throws MessagingException {
+            throws MessagingException {
         close();
         open();
 
-        if (!m8bitEncodingAllowed) {
-            Timber.d("Server does not support 8bit transfer encoding");
-        }
         // If the message has attachments and our server has told us about a limit on
         // the size of messages, count the message's size before sending it
-        if (mLargestAcceptableMessage > 0 && message.hasAttachments()) {
-            if (message.calculateSize() > mLargestAcceptableMessage) {
+        if (largestAcceptableMessage > 0 && message.hasAttachments()) {
+            if (message.calculateSize() > largestAcceptableMessage) {
                 throw new MessagingException("Message too large for server", true);
             }
         }
 
         boolean entireMessageSent = false;
-        Address[] from = message.getFrom();
+
         try {
-            String fromAddress = from[0].getAddress();
-            if (m8bitEncodingAllowed) {
-                executeCommand("MAIL FROM:<%s> BODY=8BITMIME", fromAddress);
+            String mailFrom = constructSmtpMailFromCommand(message.getFrom(), is8bitEncodingAllowed);
+
+            if (isPipeliningSupported) {
+                Queue<String> pipelinedCommands = new LinkedList<>();
+                pipelinedCommands.add(mailFrom);
+
+                for (String address : addresses) {
+                    pipelinedCommands.add(String.format("RCPT TO:<%s>", address));
+                }
+
+                pipelinedCommands.add("DATA");
+                executePipelinedCommands(pipelinedCommands);
+                readPipelinedResponse(pipelinedCommands);
             } else {
-                executeCommand("MAIL FROM:<%s>", fromAddress);
-            }
+                executeCommand(mailFrom);
 
-            for (String address : addresses) {
-                executeCommand("RCPT TO:<%s>", address);
-            }
+                for (String address : addresses) {
+                    executeCommand("RCPT TO:<%s>", address);
+                }
 
-            executeCommand("DATA");
+                executeCommand("DATA");
+            }
 
             EOLConvertingOutputStream msgOut = new EOLConvertingOutputStream(
-                    new LineWrapOutputStream(new SmtpDataStuffing(mOut), 1000));
+                    new LineWrapOutputStream(new SmtpDataStuffing(outputStream), 1000));
 
             message.writeTo(msgOut);
             msgOut.endWithCrLfAndFlush();
@@ -598,31 +489,40 @@ public class SmtpTransport extends Transport {
 
     }
 
+    private static String constructSmtpMailFromCommand(Address[] from, boolean is8bitEncodingAllowed) {
+        String fromAddress = from[0].getAddress();
+        if (is8bitEncodingAllowed) {
+            return String.format("MAIL FROM:<%s> BODY=8BITMIME", fromAddress);
+        } else {
+            Timber.d("Server does not support 8bit transfer encoding");
+            return String.format("MAIL FROM:<%s>", fromAddress);
+        }
+    }
+
     @Override
     public void close() {
         try {
             executeCommand("QUIT");
         } catch (Exception e) {
-
+            // don't care
         }
-        IOUtils.closeQuietly(mIn);
-        IOUtils.closeQuietly(mOut);
-        IOUtils.closeQuietly(mSocket);
-        mIn = null;
-        mOut = null;
-        mSocket = null;
+        IOUtils.closeQuietly(inputStream);
+        IOUtils.closeQuietly(outputStream);
+        IOUtils.closeQuietly(socket);
+        inputStream = null;
+        outputStream = null;
+        socket = null;
     }
 
     private String readLine() throws IOException {
         StringBuilder sb = new StringBuilder();
         int d;
-        while ((d = mIn.read()) != -1) {
-            if (((char)d) == '\r') {
-                continue;
-            } else if (((char)d) == '\n') {
+        while ((d = inputStream.read()) != -1) {
+            char c = (char) d;
+            if (c == '\n') {
                 break;
-            } else {
-                sb.append((char)d);
+            } else if (c != '\r') {
+                sb.append(c);
             }
         }
         String ret = sb.toString();
@@ -651,8 +551,8 @@ public class SmtpTransport extends Transport {
          * SMTP servers misbehave if CR and LF arrive in separate pakets.
          * See issue 799.
          */
-        mOut.write(data);
-        mOut.flush();
+        outputStream.write(data);
+        outputStream.flush();
     }
 
     private static class CommandResponse {
@@ -660,7 +560,7 @@ public class SmtpTransport extends Transport {
         private final int replyCode;
         private final List<String> results;
 
-        public CommandResponse(int replyCode, List<String> results) {
+        CommandResponse(int replyCode, List<String> results) {
             this.replyCode = replyCode;
             this.results = results;
         }
@@ -700,7 +600,7 @@ public class SmtpTransport extends Transport {
         char replyCodeCategory = line.charAt(0);
         boolean isReplyCodeErrorCategory = (replyCodeCategory == '4') || (replyCodeCategory == '5');
         if (isReplyCodeErrorCategory) {
-            if (mEnhancedStatusCodesProvided) {
+            if (isEnhancedStatusCodesProvided) {
                 throw buildEnhancedNegativeSmtpReplyException(replyCode, results);
             } else {
                 String replyText = TextUtils.join(" ", results);
@@ -754,49 +654,91 @@ public class SmtpTransport extends Transport {
         return line;
     }
 
+    private void executePipelinedCommands(Queue<String> pipelinedCommands) throws IOException {
+        for (String command : pipelinedCommands) {
+            writeLine(command, false);
+        }
+    }
 
-//    C: AUTH LOGIN
-//    S: 334 VXNlcm5hbWU6
-//    C: d2VsZG9u
-//    S: 334 UGFzc3dvcmQ6
-//    C: dzNsZDBu
-//    S: 235 2.0.0 OK Authenticated
-//
-//    Lines 2-5 of the conversation contain base64-encoded information. The same conversation, with base64 strings decoded, reads:
-//
-//
-//    C: AUTH LOGIN
-//    S: 334 Username:
-//    C: weldon
-//    S: 334 Password:
-//    C: w3ld0n
-//    S: 235 2.0.0 OK Authenticated
+    private void readPipelinedResponse(Queue<String> pipelinedCommands) throws IOException, MessagingException {
+        String responseLine;
+        List<String> results = new ArrayList<>();
+        NegativeSmtpReplyException negativeRecipient = null;
+        for (String command : pipelinedCommands) {
+            results.clear();
+            responseLine = readCommandResponseLine(results);
+            try {
+                responseLineToCommandResponse(responseLine, results);
 
-    private void saslAuthLogin(String username, String password) throws MessagingException,
-        AuthenticationFailedException, IOException {
+            } catch (MessagingException exception) {
+                if (command.equals("DATA")) {
+                    throw exception;
+                }
+                if (command.startsWith("RCPT")) {
+                    negativeRecipient = (NegativeSmtpReplyException) exception;
+                }
+            }
+        }
+
+        if (negativeRecipient != null) {
+            try {
+                executeCommand(".");
+                throw negativeRecipient;
+            } catch (NegativeSmtpReplyException e) {
+                throw negativeRecipient;
+            }
+        }
+
+    }
+
+    private CommandResponse responseLineToCommandResponse(String line, List<String> results) throws MessagingException {
+        int length = line.length();
+        if (length < 1) {
+            throw new MessagingException("SMTP response to line is 0 length");
+        }
+
+        int replyCode = -1;
+        if (length >= 3) {
+            try {
+                replyCode = Integer.parseInt(line.substring(0, 3));
+            } catch (NumberFormatException e) { /* ignore */ }
+        }
+
+        char replyCodeCategory = line.charAt(0);
+        boolean isReplyCodeErrorCategory = (replyCodeCategory == '4') || (replyCodeCategory == '5');
+        if (isReplyCodeErrorCategory) {
+            if (isEnhancedStatusCodesProvided) {
+                throw buildEnhancedNegativeSmtpReplyException(replyCode, results);
+            } else {
+                String replyText = TextUtils.join(" ", results);
+                throw new NegativeSmtpReplyException(replyCode, replyText);
+            }
+        }
+
+        return new CommandResponse(replyCode, results);
+    }
+
+
+    private void saslAuthLogin() throws MessagingException, IOException {
         try {
             executeCommand("AUTH LOGIN");
             executeSensitiveCommand(Base64.encode(username));
             executeSensitiveCommand(Base64.encode(password));
         } catch (NegativeSmtpReplyException exception) {
             if (exception.getReplyCode() == SMTP_AUTHENTICATION_FAILURE_ERROR_CODE) {
-                // Authentication credentials invalid
-                throw new AuthenticationFailedException("AUTH LOGIN failed ("
-                        + exception.getMessage() + ")");
+                throw new AuthenticationFailedException("AUTH LOGIN failed (" + exception.getMessage() + ")");
             } else {
                 throw exception;
             }
         }
     }
 
-    private void saslAuthPlain(String username, String password) throws MessagingException,
-        AuthenticationFailedException, IOException {
+    private void saslAuthPlain() throws MessagingException, IOException {
         String data = Base64.encode("\000" + username + "\000" + password);
         try {
             executeSensitiveCommand("AUTH PLAIN %s", data);
         } catch (NegativeSmtpReplyException exception) {
             if (exception.getReplyCode() == SMTP_AUTHENTICATION_FAILURE_ERROR_CODE) {
-                // Authentication credentials invalid
                 throw new AuthenticationFailedException("AUTH PLAIN failed ("
                         + exception.getMessage() + ")");
             } else {
@@ -805,8 +747,7 @@ public class SmtpTransport extends Transport {
         }
     }
 
-    private void saslAuthCramMD5(String username, String password) throws MessagingException,
-        AuthenticationFailedException, IOException {
+    private void saslAuthCramMD5() throws MessagingException, IOException {
 
         List<String> respList = executeCommand("AUTH CRAM-MD5").results;
         if (respList.size() != 1) {
@@ -814,13 +755,12 @@ public class SmtpTransport extends Transport {
         }
 
         String b64Nonce = respList.get(0);
-        String b64CRAMString = Authentication.computeCramMd5(mUsername, mPassword, b64Nonce);
+        String b64CRAMString = Authentication.computeCramMd5(username, password, b64Nonce);
 
         try {
             executeSensitiveCommand(b64CRAMString);
         } catch (NegativeSmtpReplyException exception) {
             if (exception.getReplyCode() == SMTP_AUTHENTICATION_FAILURE_ERROR_CODE) {
-                // Authentication credentials invalid
                 throw new AuthenticationFailedException(exception.getMessage(), exception);
             } else {
                 throw exception;
@@ -828,7 +768,7 @@ public class SmtpTransport extends Transport {
         }
     }
 
-    private void saslXoauth2(String username) throws MessagingException, IOException {
+    private void saslXoauth2() throws MessagingException, IOException {
         retryXoauthWithNewToken = true;
         try {
             attemptXoauth2(username);
@@ -884,19 +824,24 @@ public class SmtpTransport extends Transport {
 
         if (response.replyCode == SMTP_CONTINUE_REQUEST) {
             String replyText = TextUtils.join("", response.results);
-            retryXoauthWithNewToken = XOAuth2ChallengeParser.shouldRetry(replyText, mHost);
+            retryXoauthWithNewToken = XOAuth2ChallengeParser.shouldRetry(replyText, host);
 
             //Per Google spec, respond to challenge with empty response
             executeCommand("");
         }
     }
 
-    private void saslAuthExternal(String username) throws MessagingException, IOException {
+    private void saslAuthExternal() throws MessagingException, IOException {
         executeCommand("AUTH EXTERNAL %s", Base64.encode(username));
     }
 
     @VisibleForTesting
     protected String getCanonicalHostName(InetAddress localAddress) {
         return localAddress.getCanonicalHostName();
+    }
+
+    @VisibleForTesting
+    protected String getHostAddress(InetAddress localAddress) {
+        return localAddress.getHostAddress();
     }
 }

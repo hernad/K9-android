@@ -13,6 +13,9 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+
+import com.fsck.k9.autocrypt.AutocryptOperations;
+import com.fsck.k9.ui.crypto.OpenPgpApiFactory;
 import timber.log.Timber;
 
 import com.fsck.k9.Account;
@@ -78,9 +81,11 @@ public class MessageLoaderHelper {
     private LoaderManager loaderManager;
     @Nullable // make this explicitly nullable, make sure to cancel/ignore any operation if this is null
     private MessageLoaderCallbacks callback;
+    private final boolean processSignedOnly;
 
 
     // transient state
+    private boolean onlyLoadMetadata;
     private MessageReference messageReference;
     private Account account;
 
@@ -97,6 +102,8 @@ public class MessageLoaderHelper {
         this.loaderManager = loaderManager;
         this.fragmentManager = fragmentManager;
         this.callback = callback;
+
+        processSignedOnly = K9.getOpenPgpSupportSignOnly();
     }
 
 
@@ -104,6 +111,7 @@ public class MessageLoaderHelper {
 
     @UiThread
     public void asyncStartOrResumeLoadingMessage(MessageReference messageReference, Parcelable cachedDecryptionResult) {
+        onlyLoadMetadata = false;
         this.messageReference = messageReference;
         this.account = Preferences.getPreferences(context).getAccount(messageReference.getAccountUuid());
 
@@ -114,6 +122,15 @@ public class MessageLoaderHelper {
                 Timber.e("Got decryption result of unknown type - ignoring");
             }
         }
+
+        startOrResumeLocalMessageLoader();
+    }
+
+    @UiThread
+    public void asyncStartOrResumeLoadingMessageMetadata(MessageReference messageReference) {
+        onlyLoadMetadata = true;
+        this.messageReference = messageReference;
+        this.account = Preferences.getPreferences(context).getAccount(messageReference.getAccountUuid());
 
         startOrResumeLocalMessageLoader();
     }
@@ -200,10 +217,17 @@ public class MessageLoaderHelper {
 
         callback.onMessageDataLoadFinished(localMessage);
 
-        boolean messageIncomplete =
-                !localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !localMessage.isSet(Flag.X_DOWNLOADED_PARTIAL);
+        boolean downloadedCompletely = localMessage.isSet(Flag.X_DOWNLOADED_FULL);
+        boolean downloadedPartially = localMessage.isSet(Flag.X_DOWNLOADED_PARTIAL);
+        boolean messageIncomplete = !downloadedCompletely && !downloadedPartially;
         if (messageIncomplete) {
             startDownloadingMessageBody(false);
+            return;
+        }
+
+        if (onlyLoadMetadata) {
+            MessageViewInfo messageViewInfo = MessageViewInfo.createForMetadataOnly(localMessage, !downloadedCompletely);
+            onDecodeMessageFinished(messageViewInfo);
             return;
         }
 
@@ -233,7 +257,8 @@ public class MessageLoaderHelper {
                 throw new IllegalStateException("loader id must be message loader id");
             }
 
-            return new LocalMessageLoader(context, MessagingController.getInstance(context), account, messageReference);
+            MessagingController messagingController = MessagingController.getInstance(context);
+            return new LocalMessageLoader(context, messagingController, account, messageReference, onlyLoadMetadata);
         }
 
         @Override
@@ -268,11 +293,12 @@ public class MessageLoaderHelper {
             messageCryptoHelper = retainCryptoHelperFragment.getData();
         }
         if (messageCryptoHelper == null || messageCryptoHelper.isConfiguredForOutdatedCryptoProvider()) {
-            messageCryptoHelper = new MessageCryptoHelper(context);
+            messageCryptoHelper = new MessageCryptoHelper(
+                    context, new OpenPgpApiFactory(), AutocryptOperations.getInstance());
             retainCryptoHelperFragment.setData(messageCryptoHelper);
         }
         messageCryptoHelper.asyncStartOrResumeProcessingMessage(
-                localMessage, messageCryptoCallback, cachedDecryptionResult);
+                localMessage, messageCryptoCallback, cachedDecryptionResult, processSignedOnly);
     }
 
     private void cancelAndClearCryptoOperation() {

@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -15,6 +16,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
+
+import com.fsck.k9.mail.TransportUris;
 import timber.log.Timber;
 
 import com.fsck.k9.Account;
@@ -24,7 +27,6 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
-import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.preferences.Settings.InvalidSettingValueException;
@@ -361,7 +363,7 @@ public class SettingsImporter {
         if (account.outgoing != null) {
             // Write outgoing server settings (transportUri)
             ServerSettings outgoing = new ImportedServerSettings(account.outgoing);
-            String transportUri = Transport.createTransportUri(outgoing);
+            String transportUri = TransportUris.createTransportUri(outgoing);
             putString(editor, accountKeyPrefix + Account.TRANSPORT_URI_KEY, Base64.encode(transportUri));
 
             /*
@@ -803,7 +805,7 @@ public class SettingsImporter {
                 String element = xpp.getName();
                 if (SettingsExporter.ACCOUNT_ELEMENT.equals(element)) {
                     if (accounts == null) {
-                        accounts = new HashMap<>();
+                        accounts = new LinkedHashMap<>();
                     }
 
                     ImportedAccount account = parseAccount(xpp, accountUuids, overview);
@@ -1008,8 +1010,7 @@ public class SettingsImporter {
     private static ImportedFolder parseFolder(XmlPullParser xpp) throws XmlPullParserException, IOException {
         ImportedFolder folder = new ImportedFolder();
 
-        String name = xpp.getAttributeValue(null, SettingsExporter.NAME_ATTRIBUTE);
-        folder.name = name;
+        folder.name = xpp.getAttributeValue(null, SettingsExporter.NAME_ATTRIBUTE);
 
         folder.settings = parseSettings(xpp, SettingsExporter.FOLDER_ELEMENT);
 

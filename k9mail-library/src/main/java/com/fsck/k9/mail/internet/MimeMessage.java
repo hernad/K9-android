@@ -19,7 +19,9 @@ import android.support.annotation.NonNull;
 
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Body;
+import com.fsck.k9.mail.BodyFactory;
 import com.fsck.k9.mail.BodyPart;
+import com.fsck.k9.mail.DefaultBodyFactory;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Multipart;
@@ -100,13 +102,17 @@ public class MimeMessage extends Message {
 
         mBody = null;
 
-        MimeConfig parserConfig  = new MimeConfig();
-        parserConfig.setMaxHeaderLen(-1); // The default is a mere 10k
-        parserConfig.setMaxLineLen(-1); // The default is 1000 characters. Some MUAs generate
-        // REALLY long References: headers
-        parserConfig.setMaxHeaderCount(-1); // Disable the check for header count.
+        MimeConfig parserConfig = new MimeConfig.Builder()
+                // The default is a mere 10k
+                .setMaxHeaderLen(-1)
+                // The default is 1000 characters. Some MUAs generate REALLY long References: headers
+                .setMaxLineLen(-1)
+                // Disable the check for header count.
+                .setMaxHeaderCount(-1)
+                .build();
+
         MimeStreamParser parser = new MimeStreamParser(parserConfig);
-        parser.setContentHandler(new MimeMessageBuilder());
+        parser.setContentHandler(new MimeMessageBuilder(new DefaultBodyFactory()));
         if (recurse) {
             parser.setRecurse();
         }
@@ -520,8 +526,10 @@ public class MimeMessage extends Message {
 
     private class MimeMessageBuilder implements ContentHandler {
         private final LinkedList<Object> stack = new LinkedList<>();
+        private final BodyFactory bodyFactory;
 
-        public MimeMessageBuilder() {
+        public MimeMessageBuilder(BodyFactory bodyFactory) {
+            this.bodyFactory = bodyFactory;
         }
 
         private void expect(Class<?> c) {
@@ -576,7 +584,7 @@ public class MimeMessage extends Message {
         @Override
         public void body(BodyDescriptor bd, InputStream in) throws IOException, MimeException {
             expect(Part.class);
-            Body body = MimeUtility.createBody(in, bd.getTransferEncoding(), bd.getMimeType());
+            Body body = bodyFactory.createBody(bd.getTransferEncoding(), bd.getMimeType(), in);
             ((Part)stack.peek()).setBody(body);
         }
 
@@ -682,11 +690,6 @@ public class MimeMessage extends Message {
         MimeMessage message = new MimeMessage();
         copy(message);
         return message;
-    }
-
-    @Override
-    public long getId() {
-        return Long.parseLong(mUid); //or maybe .mMessageId?
     }
 
     @Override

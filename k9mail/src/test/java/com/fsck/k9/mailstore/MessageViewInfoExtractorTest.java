@@ -9,12 +9,14 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import android.app.Application;
+import android.support.annotation.NonNull;
 
 import com.fsck.k9.GlobalsHelper;
 import com.fsck.k9.K9RobolectricTestRunner;
-import com.fsck.k9.message.html.HtmlSanitizer;
-import com.fsck.k9.message.html.HtmlSanitizerHelper;
+import com.fsck.k9.activity.K9ActivityCommon;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.BodyPart;
+import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Part;
@@ -27,19 +29,33 @@ import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mail.internet.Viewable;
 import com.fsck.k9.mail.internet.Viewable.MessageHeader;
+import com.fsck.k9.mailstore.CryptoResultAnnotation.CryptoError;
 import com.fsck.k9.mailstore.MessageViewInfoExtractor.ViewableExtractedText;
+import com.fsck.k9.message.extractors.AttachmentInfoExtractor;
+import com.fsck.k9.message.html.HtmlProcessor;
+import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 
+import static com.fsck.k9.message.TestMessageConstructionUtils.bodypart;
+import static com.fsck.k9.message.TestMessageConstructionUtils.messageFromBody;
+import static com.fsck.k9.message.TestMessageConstructionUtils.multipart;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertSame;
-import static org.mockito.Matchers.any;
+import static junit.framework.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 
+@SuppressWarnings("WeakerAccess")
 @RunWith(K9RobolectricTestRunner.class)
 public class MessageViewInfoExtractorTest {
     public static final String BODY_TEXT = "K-9 Mail rocks :>";
@@ -49,6 +65,7 @@ public class MessageViewInfoExtractorTest {
 
     private MessageViewInfoExtractor messageViewInfoExtractor;
     private Application context;
+    private AttachmentInfoExtractor attachmentInfoExtractor;
 
 
     @Before
@@ -57,10 +74,9 @@ public class MessageViewInfoExtractorTest {
 
         GlobalsHelper.setContext(context);
 
-        HtmlSanitizer dummyHtmlSanitizer = HtmlSanitizerHelper.getDummyHtmlSanitizer();
-
-        messageViewInfoExtractor = new MessageViewInfoExtractor(context,
-                null, dummyHtmlSanitizer);
+        HtmlProcessor htmlProcessor = createFakeHtmlProcessor();
+        attachmentInfoExtractor = spy(AttachmentInfoExtractor.getInstance());
+        messageViewInfoExtractor = new MessageViewInfoExtractor(context, attachmentInfoExtractor, htmlProcessor);
     }
 
     @Test
@@ -74,11 +90,11 @@ public class MessageViewInfoExtractorTest {
         message.setHeader(MimeHeader.HEADER_CONTENT_TYPE, "text/plain; format=flowed");
 
         // Prepare fixture
-        HtmlSanitizer htmlSanitizer = mock(HtmlSanitizer.class);
+        HtmlProcessor htmlProcessor = mock(HtmlProcessor.class);
         MessageViewInfoExtractor messageViewInfoExtractor =
-                new MessageViewInfoExtractor(context, null, htmlSanitizer);
+                new MessageViewInfoExtractor(context, null, htmlProcessor);
         String value = "--sanitized html--";
-        when(htmlSanitizer.sanitize(any(String.class))).thenReturn(value);
+        when(htmlProcessor.processForDisplay(anyString())).thenReturn(value);
 
         // Extract text
         List<Part> outputNonViewableParts = new ArrayList<>();
@@ -106,14 +122,13 @@ public class MessageViewInfoExtractorTest {
         MessageExtractor.findViewablesAndAttachments(message, outputViewableParts, outputNonViewableParts);
         ViewableExtractedText container = messageViewInfoExtractor.extractTextFromViewables(outputViewableParts);
 
-        String expectedText = BODY_TEXT;
         String expectedHtml =
                 "<pre class=\"k9mail\">" +
                 "K-9 Mail rocks :&gt;" +
                 "</pre>";
 
-        assertEquals(expectedText, container.text);
-        assertEquals(expectedHtml, getHtmlBodyText(container.html));
+        assertEquals(BODY_TEXT, container.text);
+        assertEquals(expectedHtml, container.html);
     }
 
     @Test
@@ -136,11 +151,11 @@ public class MessageViewInfoExtractorTest {
                 "not flowed line";
         String expectedHtml =
                 "<pre class=\"k9mail\">" +
-                        "K-9 Mail rocks :&gt; flowed line<br />not flowed line" +
+                        "K-9 Mail rocks :&gt; flowed line<br>not flowed line" +
                         "</pre>";
 
         assertEquals(expectedText, container.text);
-        assertEquals(expectedHtml, getHtmlBodyText(container.html));
+        assertEquals(expectedHtml, container.html);
     }
 
     @Test
@@ -161,12 +176,8 @@ public class MessageViewInfoExtractorTest {
         assertEquals(outputViewableParts.size(), 1);
         ViewableExtractedText container = messageViewInfoExtractor.extractTextFromViewables(outputViewableParts);
 
-        String expectedText = BODY_TEXT;
-        String expectedHtml =
-                bodyText;
-
-        assertEquals(expectedText, container.text);
-        assertEquals(expectedHtml, getHtmlBodyText(container.html));
+        assertEquals(BODY_TEXT, container.text);
+        assertEquals(bodyText, container.html);
     }
 
     @Test
@@ -211,11 +222,12 @@ public class MessageViewInfoExtractorTest {
 
 
         assertEquals(expectedText, container.text);
-        assertEquals(expectedHtml, getHtmlBodyText(container.html));
+        assertEquals(expectedHtml, container.html);
     }
 
     @Test
     public void testTextPlusRfc822Message() throws MessagingException {
+        K9ActivityCommon.setLanguage(context, "en");
         Locale.setDefault(Locale.US);
         TimeZone.setDefault(TimeZone.getTimeZone("GMT+01:00"));
 
@@ -229,7 +241,7 @@ public class MessageViewInfoExtractorTest {
 
         // Create message/rfc822 body
         MimeMessage innerMessage = new MimeMessage();
-        innerMessage.addSentDate(new Date(112, 02, 17), false);
+        innerMessage.addSentDate(new Date(112, 2, 17), false);
         innerMessage.setRecipients(RecipientType.TO, new Address[] { new Address("to@example.com") });
         innerMessage.setSubject("Subject");
         innerMessage.setFrom(new Address("from@example.com"));
@@ -290,7 +302,7 @@ public class MessageViewInfoExtractorTest {
                 "</pre>";
 
         assertEquals(expectedText, container.text);
-        assertEquals(expectedHtml, getHtmlBodyText(container.html));
+        assertEquals(expectedHtml, container.html);
     }
 
     @Test
@@ -341,12 +353,12 @@ public class MessageViewInfoExtractorTest {
         String expectedHtmlText = "<table style=\"border: 0\">" +
                 "<tr><th style=\"text-align: left; vertical-align: top;\">Subject:</th><td>(No subject)</td></tr>" +
                 "</table>" +
-                "<pre class=\"k9mail\">text body of first message<br /></pre>" +
+                "<pre class=\"k9mail\">text body of first message<br></pre>" +
                 "<p style=\"margin-top: 2.5em; margin-bottom: 1em; border-bottom: 1px solid #000\"></p>" +
                 "<table style=\"border: 0\">" +
                 "<tr><th style=\"text-align: left; vertical-align: top;\">Subject:</th><td>subject of second message</td></tr>" +
                 "</table>" +
-                "<pre class=\"k9mail\">text part of second message<br /></pre>";
+                "<pre class=\"k9mail\">text part of second message<br></pre>";
 
 
         assertEquals(4, outputViewableParts.size());
@@ -355,13 +367,207 @@ public class MessageViewInfoExtractorTest {
         ViewableExtractedText firstMessageExtractedText =
                 messageViewInfoExtractor.extractTextFromViewables(outputViewableParts);
         assertEquals(expectedExtractedText, firstMessageExtractedText.text);
-        assertEquals(expectedHtmlText, getHtmlBodyText(firstMessageExtractedText.html));
+        assertEquals(expectedHtmlText, firstMessageExtractedText.html);
     }
 
-    private static String getHtmlBodyText(String htmlText) {
-        htmlText = htmlText.substring(htmlText.indexOf("<body>") +6);
-        htmlText = htmlText.substring(0, htmlText.indexOf("</body>"));
-        return htmlText;
+    @Test
+    public void extractMessage_withAttachment() throws Exception {
+        BodyPart attachmentPart = bodypart("application/octet-stream");
+        Message message = messageFromBody(multipart("mixed",
+                bodypart("text/plain", "text"),
+                attachmentPart
+        ));
+        AttachmentViewInfo attachmentViewInfo = mock(AttachmentViewInfo.class);
+        setupAttachmentInfoForPart(attachmentPart, attachmentViewInfo);
+
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, null);
+
+
+        assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
+        assertSame(attachmentViewInfo, messageViewInfo.attachments.get(0));
+        assertNull(messageViewInfo.cryptoResultAnnotation);
+        assertTrue(messageViewInfo.extraAttachments.isEmpty());
     }
 
+    @Test
+    public void extractMessage_withCryptoAnnotation() throws Exception {
+        Message message = messageFromBody(multipart("signed", "protocol=\"application/pgp-signature\"",
+                bodypart("text/plain", "text"),
+                bodypart("application/pgp-signature")
+        ));
+        CryptoResultAnnotation annotation = CryptoResultAnnotation.createOpenPgpResultAnnotation(
+                null, null, null, null, null, false);
+        MessageCryptoAnnotations messageCryptoAnnotations = createAnnotations(message, annotation);
+
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, messageCryptoAnnotations);
+
+
+        assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
+        assertSame(annotation, messageViewInfo.cryptoResultAnnotation);
+        assertSame(message, messageViewInfo.message);
+        assertSame(message, messageViewInfo.rootPart);
+        assertTrue(messageViewInfo.attachments.isEmpty());
+        assertTrue(messageViewInfo.extraAttachments.isEmpty());
+    }
+
+    @Test
+    public void extractMessage_withCryptoAnnotation_andReplacementPart() throws Exception {
+        Message message = messageFromBody(multipart("signed", "protocol=\"application/pgp-signature\"",
+                bodypart("text/plain", "text"),
+                bodypart("application/pgp-signature")
+        ));
+        MimeBodyPart replacementPart = bodypart("text/plain", "replacement text");
+        CryptoResultAnnotation annotation = CryptoResultAnnotation.createOpenPgpResultAnnotation(
+                null, null, null, null, replacementPart, false);
+        MessageCryptoAnnotations messageCryptoAnnotations = createAnnotations(message, annotation);
+
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, messageCryptoAnnotations);
+
+
+        assertEquals("<pre class=\"k9mail\">replacement text</pre>", messageViewInfo.text);
+        assertSame(annotation, messageViewInfo.cryptoResultAnnotation);
+        assertSame(message, messageViewInfo.message);
+        assertSame(replacementPart, messageViewInfo.rootPart);
+        assertTrue(messageViewInfo.attachments.isEmpty());
+        assertTrue(messageViewInfo.extraAttachments.isEmpty());
+    }
+
+    @Test
+    public void extractMessage_withCryptoAnnotation_andExtraText() throws Exception {
+        MimeBodyPart signedPart = multipart("signed", "protocol=\"application/pgp-signature\"",
+                bodypart("text/plain", "text"),
+                bodypart("application/pgp-signature")
+        );
+        BodyPart extraText = bodypart("text/plain", "extra text");
+        Message message = messageFromBody(multipart("mixed",
+                signedPart,
+                extraText
+        ));
+        CryptoResultAnnotation annotation = CryptoResultAnnotation.createOpenPgpResultAnnotation(
+                null, null, null, null, null, false);
+        MessageCryptoAnnotations messageCryptoAnnotations = createAnnotations(signedPart, annotation);
+
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, messageCryptoAnnotations);
+
+
+        assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
+        assertSame(annotation, messageViewInfo.cryptoResultAnnotation);
+        assertEquals("extra text", messageViewInfo.extraText);
+        assertTrue(messageViewInfo.attachments.isEmpty());
+        assertTrue(messageViewInfo.extraAttachments.isEmpty());
+    }
+
+    @Test
+    public void extractMessage_withCryptoAnnotation_andExtraAttachment() throws Exception {
+        MimeBodyPart signedPart = multipart("signed", "protocol=\"application/pgp-signature\"",
+                bodypart("text/plain", "text"),
+                bodypart("application/pgp-signature")
+        );
+        BodyPart extraAttachment = bodypart("application/octet-stream");
+        Message message = messageFromBody(multipart("mixed",
+                signedPart,
+                extraAttachment
+        ));
+        CryptoResultAnnotation annotation = CryptoResultAnnotation.createOpenPgpResultAnnotation(
+                null, null, null, null, null, false);
+        MessageCryptoAnnotations messageCryptoAnnotations = createAnnotations(signedPart, annotation);
+
+        AttachmentViewInfo attachmentViewInfo = mock(AttachmentViewInfo.class);
+        setupAttachmentInfoForPart(extraAttachment, attachmentViewInfo);
+
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, messageCryptoAnnotations);
+
+
+        assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
+        assertSame(annotation, messageViewInfo.cryptoResultAnnotation);
+        assertSame(attachmentViewInfo, messageViewInfo.extraAttachments.get(0));
+        assertTrue(messageViewInfo.attachments.isEmpty());
+    }
+
+    @Test
+    public void extractMessage_openPgpEncrypted_withoutAnnotations() throws Exception {
+        Message message = messageFromBody(
+                multipart("encrypted", "protocol=\"application/pgp-encrypted\"",
+                        bodypart("application/pgp-encrypted"),
+                        bodypart("application/octet-stream")
+                )
+        );
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, null);
+
+        assertEquals(CryptoError.OPENPGP_ENCRYPTED_NO_PROVIDER, messageViewInfo.cryptoResultAnnotation.getErrorType());
+        assertNull(messageViewInfo.text);
+        assertNull(messageViewInfo.attachments);
+        assertNull(messageViewInfo.extraAttachments);
+    }
+
+    @Test
+    public void extractMessage_multipartSigned_UnknownProtocol() throws Exception {
+        Message message = messageFromBody(
+                multipart("signed", "protocol=\"application/pkcs7-signature\"",
+                    bodypart("text/plain", "text"),
+                    bodypart("application/pkcs7-signature", "signature")
+                )
+        );
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, null);
+
+        assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
+        assertNull(messageViewInfo.cryptoResultAnnotation);
+        assertTrue(messageViewInfo.attachments.isEmpty());
+        assertTrue(messageViewInfo.extraAttachments.isEmpty());
+    }
+
+    @Test
+    public void extractMessage_multipartSigned_UnknownProtocol_withExtraAttachments() throws Exception {
+        BodyPart extraAttachment = bodypart("application/octet-stream");
+        Message message = messageFromBody(
+                multipart("mixed",
+                        multipart("signed", "protocol=\"application/pkcs7-signature\"",
+                                bodypart("text/plain", "text"),
+                                bodypart("application/pkcs7-signature", "signature")
+                        ),
+                        extraAttachment
+                )
+        );
+        AttachmentViewInfo mock = mock(AttachmentViewInfo.class);
+        setupAttachmentInfoForPart(extraAttachment, mock);
+
+        MessageViewInfo messageViewInfo = messageViewInfoExtractor.extractMessageForView(message, null);
+
+        assertEquals("<pre class=\"k9mail\">text</pre>", messageViewInfo.text);
+        assertNull(messageViewInfo.cryptoResultAnnotation);
+        assertSame(mock, messageViewInfo.attachments.get(0));
+        assertTrue(messageViewInfo.extraAttachments.isEmpty());
+    }
+
+    void setupAttachmentInfoForPart(BodyPart extraAttachment, AttachmentViewInfo attachmentViewInfo)
+            throws MessagingException {
+        doReturn(attachmentViewInfo).when(attachmentInfoExtractor).extractAttachmentInfo(extraAttachment);
+    }
+
+    @NonNull
+    MessageCryptoAnnotations createAnnotations(Part part, CryptoResultAnnotation annotation) {
+        MessageCryptoAnnotations messageCryptoAnnotations = new MessageCryptoAnnotations();
+        messageCryptoAnnotations.put(part, annotation);
+        return messageCryptoAnnotations;
+    }
+
+    HtmlProcessor createFakeHtmlProcessor() {
+        HtmlProcessor htmlProcessor = mock(HtmlProcessor.class);
+
+        when(htmlProcessor.processForDisplay(anyString())).thenAnswer(new Answer<String>() {
+            @Override
+            public String answer(InvocationOnMock invocation) throws Throwable {
+                return (String) invocation.getArguments()[0];
+            }
+        });
+
+        return htmlProcessor;
+    }
 }
