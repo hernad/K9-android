@@ -910,7 +910,7 @@
   <string name="locked_attach_title">Unprotected Attachment</string>
   <string name="locked_attach_unencrypted">This part was not encrypted, and may be insecure.</string>
   <string name="locked_attach_unlock">Unlock</string>
-  <string name="message_progress_text">Loading…</string>
+  <string name="message_progress_text">Učitavam…</string>
   <string name="messageview_crypto_error_title">Error decrypting email</string>
   <string name="messageview_crypto_warning_show_anyway">Show message anyway</string>
   <string name="messageview_crypto_warning_title">Security Warning</string>
@@ -937,12 +937,10 @@
   <string name="mail_list_widget_text">K9 lista poruka</string>
   <string name="mail_list_widget_loading">Učitavam poruke…</string>
 
-
   <string name="address_type_home">Kućna</string>
   <string name="address_type_mobile">Mobile</string>
   <string name="address_type_other">Ostalo</string>
   <string name="address_type_work">Poslovna</string>
-
 
   <string name="compose_error_incomplete_recipient">Recipient field contains incomplete input!</string>
   <string name="compose_error_no_draft_folder">No Drafts folder configured for this account!</string>
@@ -970,10 +968,8 @@
   <string name="crypto_msg_unsigned_encrypted">There is no signature, this message may have been intercepted.</string>
   <string name="crypto_msg_unsupported_encrypted">Message is encrypted, but in an unsupported format.</string>
   <string name="crypto_msg_unsupported_signed">Message is signed, but in an unsupported format.</string>
-  <string name="crypto_settings_cancel">Cancel</string>
-  <string name="crypto_settings_ok">Proceed</string>
-  <string name="dialog_confirm_mark_all_as_read_cancel_button">Ne</string>
-  <string name="dialog_confirm_mark_all_as_read_confirm_button">Da</string>
+  <string name="crypto_settings_cancel">Otkaži</string>
+  <string name="crypto_settings_ok">Nastavi</string>
   <string name="dialog_confirm_mark_all_as_read_message">Želite označiti sve poruke pročitanim?</string>
   <string name="dialog_confirm_mark_all_as_read_title">Potvrdi sve poruke kao pročitane</string>
   <string name="empty_subject">Subject is empty, click again to send anyway</string>
@@ -1054,19 +1050,7 @@ Please submit bug reports, contribute new features and ask questions at
 
   <string name="apg">APG</string>
   <string name="apg_deprecated_title">APG Deprecation Warning</string>
-
   <string name="global_settings_confirm_menu_mark_all_read">Mark all messages as read</string>
   <string name="no_crypto_provider_see_global">No OpenPGP app configured, see global settings!</string>
-
-
-  <string name="crypto_settings_cancel">Otkaži</string>
-  <string name="recipient_cc">Cc</string>
-  <string name="recipient_bcc">Bcc</string>
-  <string name="recipient_to">Za</string>
-  <string name="address_type_other">Ostalo</string>
-  <string name="address_type_mobile">Mobilna</string>
-  <string name="crypto_mode_private">Enkriptiraj</string>
-  <string name="crypto_info_ok">U REDU</string>
-  <string name="message_progress_text">Učitavam…</string>
   <string name="openpgp_enabled_error_back">Natrag</string>
 </resources>
