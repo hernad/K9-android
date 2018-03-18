@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -xv
+
 SIGNING_NAME="bring.out doo Sarajevo"
 BUILD_TOOLS_VER=27.0.3
 VALID_DAYS=20000
