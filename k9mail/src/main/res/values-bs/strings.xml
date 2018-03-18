@@ -32,10 +32,6 @@
   <string name="read_attachment_desc">Dopušta ovoj aplikaciji čitanje vaših email priloga.</string>
   <string name="read_messages_label">čitanje E-Pošte</string>
   <string name="read_messages_desc">Dopušta ovoj aplikaciji čitanje vaših emailova</string>
-  <string name="app_revision_fmt">Informacije Revizije: <xliff:g id="app_revision_url">%s</xliff:g></string>
-  <string name="app_libraries">Mi koristimo slijedeće biblioteke treće strane: <xliff:g id="app_libraries_list">%s</xliff:g></string>
-  <string name="read_messages_label">Čitanje E-Pošte</string>
-  <string name="read_messages_desc">Dopušta ovoj aplikaciji čitanje vaše E-Pošte</string>
   <string name="delete_messages_label">Brisanje E-Pošte</string>
   <string name="delete_messages_desc">Dopušta ovoj aplikaciji brisanje vaših emailova.</string>
   <string name="about_title_fmt">O <xliff:g id="app_name">%s</xliff:g></string>
