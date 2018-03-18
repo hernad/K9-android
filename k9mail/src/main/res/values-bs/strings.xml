@@ -195,7 +195,6 @@
   <string name="message_view_show_pictures_action">Prikaži slike</string>
   <string name="message_view_show_more_attachments_action">Više…</string>
   <string name="message_view_no_viewer">Ne mogu pronaći aplikaciju za pregled <xliff:g id="mimetype">%s</xliff:g>.</string>
-  <string name="message_view_no_viewer">Ne mogu pronaći preglednik za <xliff:g id="mimetype">%s</xliff:g>.</string>
   <string name="message_view_download_remainder">Preuzmi cijelu poruku</string>
   <!--NOTE: The following message refers to strings with id account_setup_incoming_save_all_headers_label and account_setup_incoming_title-->
   <string name="message_no_additional_headers_available">Sva zaglavlja su preuzeta, ali nema dodatnih zaglavlja za prikaz.</string>
