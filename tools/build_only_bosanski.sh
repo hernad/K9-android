@@ -54,7 +54,10 @@ do
 done
 
 echo "echo iz bs setujem strings.xml"
+
 cp ./k9mail/src/main/res/values-bs/strings.xml  ./k9mail/src/main/res/values/strings.xml
+mkdir -p $APK_DIR
+
 
 if [ x$1 == xDEBUG ]
 then
