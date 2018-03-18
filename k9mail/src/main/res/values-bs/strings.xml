@@ -725,14 +725,11 @@
   <string name="dialog_confirm_spam_title">Potvrda premještanja u smeće</string>
   <string name="dialog_confirm_mark_all_as_read_confirm_button">Da</string>
   <string name="dialog_confirm_mark_all_as_read_cancel_button">Ne</string>
-  <string name="dialog_confirm_spam_title">Potvrda premještanja u mapu neželjena pošta</string>
   <plurals name="dialog_confirm_spam_message">
     <item quantity="one">Da li stvarno želite premjestiti ovu poruku u smeće?</item>
     <item quantity="few">Da li stvarno želite obrisati <xliff:g id="message_count">%1$d</xliff:g> poruke?</item>
     <item quantity="other">Da li stvarno želite obrisati <xliff:g id="message_count">%1$d</xliff:g> poruke?</item>
   </plurals>
-  <string name="dialog_confirm_spam_confirm_button">Da</string>
-  <string name="dialog_confirm_spam_cancel_button">Ne</string>
   <string name="dialog_attachment_progress_title">Otvaram prilog</string>
   <string name="debug_logging_enabled">Opcija ispravljanja grešaka omogućena</string>
   <string name="messagelist_sent_to_me_sigil">»</string>
