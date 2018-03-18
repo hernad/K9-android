@@ -1053,4 +1053,10 @@ Please submit bug reports, contribute new features and ask questions at
   <string name="global_settings_confirm_menu_mark_all_read">Mark all messages as read</string>
   <string name="no_crypto_provider_see_global">No OpenPGP app configured, see global settings!</string>
   <string name="openpgp_enabled_error_back">Natrag</string>
+
+  <string name="account_settings_crypto_prefer_encrypt">Autocrypt mutual mode</string>
+  <string name="dialog_autocrypt_mutual_title">Autocrypt mutual mode</string>
+  <string name="dialog_autocrypt_mutual_description_1">Messages will normally be encrypted by choice, or when replying to an encrypted message.</string>
+  <string name="dialog_autocrypt_mutual_description_2">If both sender and recipients enable mutual mode, encryption will be enabled by default.</string>
+
 </resources>
