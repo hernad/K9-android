@@ -873,9 +873,6 @@
   <string name="openpgp_result_action_lookup">Potraži</string>
   <string name="openpgp_result_no_name">Bez naziva</string>
   <string name="openpgp_result_no_email">Bez emaila</string>
-  <string name="fetching_attachment_dialog_title_save">Spremanje skice</string>
-  <string name="fetching_attachment_dialog_message">Dohvaćanje privitka…</string>
-  <string name="auth_external_error">Ne mogu identificirati. Poslužitelj ne oglašava SASL VANJSKU sposobnost. To može biti problem sa certifikatom klijenta (istekao, nepoznat izdavatelj certifikata) ili neki drugi konfiguracijski problem.</string>
   <!--=== Client certificates specific ==================================================================-->
   <string name="account_setup_basics_client_certificate">Koristi certifikat klijenta</string>
   <string name="client_certificate_spinner_empty">Nema certifikata klijenta</string>
