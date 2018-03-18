@@ -53,7 +53,7 @@ android {
         applicationId "ba.out.bring.k9"
         testApplicationId "ba.out.bring.k9.tests"
 
-        versionCode 23513
+        versionCode 23514
         versionName '5.501.h13'
 
         minSdkVersion 15

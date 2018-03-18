@@ -19,6 +19,7 @@ cd k9mail/build/outputs/apk
 jarsigner -verbose -keystore bringout-android.keystore \
       k9mail-release-unsigned.apk "$SIGNING_NAME"
 
+#Enter Passphrase for keystore:
 
 rm k9mail-signed.apk 
 
