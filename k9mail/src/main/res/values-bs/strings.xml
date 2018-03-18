@@ -185,20 +185,17 @@
   <string name="message_compose_quote_header_cc">Cc:</string>
   <string name="message_compose_reply_header_fmt"><xliff:g id="sender">%s</xliff:g> je napisao:</string>
   <string name="message_compose_reply_header_fmt_with_date">Na <xliff:g id="sent_date">%1$s</xliff:g>, <xliff:g id="sender">%2$s</xliff:g> wrote:</string>
-<<<<<<< HEAD:k9mail/src/main/res/values-bs/strings.xml
   <string name="message_compose_error_no_recipients">Morate navesti barem jednog primaoca</string>
   <string name="error_contact_address_not_found">Nije pronađena email adresa za ovaj kontakt.</string>
   <string name="message_compose_attachments_skipped_toast">Neki prilozi ne mogu biti proslijeđeni zato jer nisu preuzeti.</string>
   <string name="message_compose_show_quoted_text_action">Citat poruke</string>
   <string name="message_compose_description_delete_quoted_text">Skloniti citirani tekst</string>
   <string name="message_compose_description_edit_quoted_text">Ispraviti citirani tekst</string>
-=======
   <string name="message_compose_error_no_recipients">Morate dodati barem jednog primatelja</string>
   <string name="error_contact_address_not_found">Nije poronađena adrese e-pošte za ovaj kontakt.</string>
   <string name="message_compose_attachments_skipped_toast">Neki privici ne mogu biti proslijeđeni zato jer nisu preuzeti.</string>
   <string name="message_compose_description_delete_quoted_text">Maknuti citirani tekst</string>
   <string name="message_compose_description_edit_quoted_text">Urediti citirani tekst</string>
->>>>>>> 5.501:k9mail/src/main/res/values-hr/strings.xml
   <string name="message_view_from_format">Od: <xliff:g id="name">%s</xliff:g> &lt;<xliff:g id="email">%s</xliff:g>&gt;</string>
   <string name="message_to_label">Za:</string>
   <string name="message_view_cc_label">Cc:</string>
