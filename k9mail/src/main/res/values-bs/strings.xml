@@ -184,8 +184,6 @@
   <string name="error_contact_address_not_found">Nije pronađena email adresa za ovaj kontakt.</string>
   <string name="message_compose_attachments_skipped_toast">Neki prilozi ne mogu biti proslijeđeni zato jer nisu preuzeti.</string>
   <string name="message_compose_show_quoted_text_action">Citat poruke</string>
-  <string name="message_compose_description_delete_quoted_text">Skloniti citirani tekst</string>
-  <string name="message_compose_description_edit_quoted_text">Ispraviti citirani tekst</string>
   <string name="message_compose_description_delete_quoted_text">Ukloniti citirani tekst</string>
   <string name="message_compose_description_edit_quoted_text">Ispraviti citirani tekst</string>
   <string name="message_view_from_format">Od: <xliff:g id="name">%s</xliff:g> &lt;<xliff:g id="email">%s</xliff:g>&gt;</string>
