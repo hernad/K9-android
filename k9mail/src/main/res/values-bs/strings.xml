@@ -817,8 +817,14 @@
   <string name="account_settings_remote_search_num_label">Granica pretrage servera</string>
   <string name="account_settings_remote_search_num_summary">Traženje će se zaustaviti nakon pronalaska <xliff:g id="num_results">%s</xliff:g> rezultata.</string>
   <string name="remote_search_sending_query">Šaljem upit serveru</string>
-  <string name="remote_search_downloading">Preuzimam %d rezultate</string>
-  <string name="remote_search_downloading_limited">Preuzimam  %1$d of %2$d rezultata</string>
+  <plurals name="remote_search_downloading">
+        <item quantity="one">Preuzimam %d resultat</item>
+        <item quantity="other">Preuzimam %d rezultate</item>
+  </plurals>
+  <plurals name="remote_search_downloading_limited">
+        <item quantity="one">Preuzimam %1$d od %2$d resultata</item>
+        <item quantity="other">Preuzmima %1$d od %2$d rezultata</item>
+  </plurals>
   <string name="remote_search_error">Udaljeno pretraživanje nije uspjelo</string>
   <string name="account_settings_search">Pretraga</string>
   <string name="account_settings_remote_search_enabled">Omogući pretraživanje servera</string>
