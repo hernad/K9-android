@@ -46,7 +46,7 @@ import com.fsck.k9.service.StorageGoneReceiver;
 import com.fsck.k9.widget.list.MessageListWidgetProvider;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
-import ba.out.util.LocaleHelper;
+//import ba.out.util.LocaleHelper;
 
 public class K9 extends Application {
     /**
@@ -507,11 +507,12 @@ public class K9 extends Application {
         fontSizes.save(editor);
     }
 
-
+/*
     @Override
 	protected void attachBaseContext(Context base) {
 		super.attachBaseContext(LocaleHelper.onAttach(base, "bs"));
 	}
+*/
 
     @Override
     public void onCreate() {
