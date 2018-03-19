@@ -43,6 +43,13 @@ LANG="$LANG tr"
 LANG="$LANG uk"
 LANG="$LANG zh-rCN"
 LANG="$LANG zh-rTW"
+LANG="$LANG is"
+LANG="$LANG cy"
+LANG="$LANG eo"
+LANG="$LANG gd"
+LANG="$LANG br"
+LANG="$LANG in"
+LANG="$LANG sq"
 
 echo $LANG
 
@@ -55,7 +62,7 @@ done
 
 echo "echo iz bs setujem strings.xml"
 
-#cp ./k9mail/src/main/res/values-bs/strings.xml  ./k9mail/src/main/res/values/strings.xml
+cp ./k9mail/src/main/res/values-bs/strings.xml  ./k9mail/src/main/res/values/strings.xml
 mkdir -p $APK_DIR
 
 
