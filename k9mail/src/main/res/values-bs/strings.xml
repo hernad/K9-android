@@ -1132,9 +1132,6 @@ Please submit bug reports, contribute new features and ask questions at
   <string name="openpgp_enabled_error_gotit">Got it</string>
   <string name="openpgp_enabled_error_disable">Zabraniti enkripciju</string>
   <string name="openpgp_encryption">OpenPGP Encryption</string>
-  <string name="app_revision_url">https://github.com/hernad/K9-android/</string>
-  <string name="app_webpage_url">https://github.com/hernad/K9-android/</string>
-  <string name="message_header_mua">K9 bring.out android email</string>
-  <string name="app_htmlcleaner_license">-</string>
+
 
 </resources>
