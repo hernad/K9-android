@@ -1,6 +1,6 @@
 # K9
 
-bring.out fork
+bring.out fork (bosnian localization)
 
 
 # Upstream: K-9 Mail
