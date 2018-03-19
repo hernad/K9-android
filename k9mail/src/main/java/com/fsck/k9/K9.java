@@ -1,7 +1,6 @@
 
 package com.fsck.k9;
 
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +46,7 @@ import com.fsck.k9.service.StorageGoneReceiver;
 import com.fsck.k9.widget.list.MessageListWidgetProvider;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
-
+import ba.out.util.LocaleHelper;
 
 public class K9 extends Application {
     /**
@@ -133,7 +132,6 @@ public class K9 extends Application {
      **/
     public static boolean DEVELOPER_MODE = BuildConfig.DEVELOPER_MODE;
 
-
     /**
      * If this is enabled there will be additional logging information sent to
      * Log.d, including protocol dumps.
@@ -171,9 +169,7 @@ public class K9 extends Application {
      * Controls when to hide the subject in the notification area.
      */
     public enum NotificationHideSubject {
-        ALWAYS,
-        WHEN_LOCKED,
-        NEVER
+        ALWAYS, WHEN_LOCKED, NEVER
     }
 
     private static NotificationQuickDelete notificationQuickDelete = NotificationQuickDelete.NEVER;
@@ -182,29 +178,20 @@ public class K9 extends Application {
      * Controls behaviour of delete button in notifications.
      */
     public enum NotificationQuickDelete {
-        ALWAYS,
-        FOR_SINGLE_MSG,
-        NEVER
+        ALWAYS, FOR_SINGLE_MSG, NEVER
     }
 
-    private static LockScreenNotificationVisibility sLockScreenNotificationVisibility =
-        LockScreenNotificationVisibility.MESSAGE_COUNT;
+    private static LockScreenNotificationVisibility sLockScreenNotificationVisibility = LockScreenNotificationVisibility.MESSAGE_COUNT;
 
     public enum LockScreenNotificationVisibility {
-        EVERYTHING,
-        SENDERS,
-        MESSAGE_COUNT,
-        APP_NAME,
-        NOTHING
+        EVERYTHING, SENDERS, MESSAGE_COUNT, APP_NAME, NOTHING
     }
 
     /**
      * Controls when to use the message list split view.
      */
     public enum SplitViewMode {
-        ALWAYS,
-        NEVER,
-        WHEN_IN_LANDSCAPE
+        ALWAYS, NEVER, WHEN_IN_LANDSCAPE
     }
 
     private static boolean messageListCheckboxes = true;
@@ -259,7 +246,6 @@ public class K9 extends Application {
     private static int pgpInlineDialogCounter;
     private static int pgpSignOnlyDialogCounter;
 
-
     /**
      * @see #areDatabasesUpToDate()
      */
@@ -291,7 +277,6 @@ public class K9 extends Application {
      */
     public static final int MAX_ATTACHMENT_DOWNLOAD_SIZE = (128 * 1024 * 1024);
 
-
     /* How many times should K-9 try to deliver a message before giving up
      * until the app is killed and restarted
      */
@@ -316,9 +301,12 @@ public class K9 extends Application {
     public static class Intents {
 
         public static class EmailReceived {
-            public static final String ACTION_EMAIL_RECEIVED = BuildConfig.APPLICATION_ID + ".intent.action.EMAIL_RECEIVED";
-            public static final String ACTION_EMAIL_DELETED = BuildConfig.APPLICATION_ID + ".intent.action.EMAIL_DELETED";
-            public static final String ACTION_REFRESH_OBSERVER = BuildConfig.APPLICATION_ID + ".intent.action.REFRESH_OBSERVER";
+            public static final String ACTION_EMAIL_RECEIVED = BuildConfig.APPLICATION_ID
+                    + ".intent.action.EMAIL_RECEIVED";
+            public static final String ACTION_EMAIL_DELETED = BuildConfig.APPLICATION_ID
+                    + ".intent.action.EMAIL_DELETED";
+            public static final String ACTION_REFRESH_OBSERVER = BuildConfig.APPLICATION_ID
+                    + ".intent.action.REFRESH_OBSERVER";
             public static final String EXTRA_ACCOUNT = BuildConfig.APPLICATION_ID + ".intent.extra.ACCOUNT";
             public static final String EXTRA_FOLDER = BuildConfig.APPLICATION_ID + ".intent.extra.FOLDER";
             public static final String EXTRA_SENT_DATE = BuildConfig.APPLICATION_ID + ".intent.extra.SENT_DATE";
@@ -368,8 +356,8 @@ public class K9 extends Application {
 
         PackageManager pm = context.getPackageManager();
 
-        if (!enabled && pm.getComponentEnabledSetting(new ComponentName(context, MailService.class)) ==
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
+        if (!enabled && pm.getComponentEnabledSetting(
+                new ComponentName(context, MailService.class)) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
             /*
              * If no accounts now exist but the service is still enabled we're about to disable it
              * so we'll reschedule to kill off any existing alarms.
@@ -380,20 +368,19 @@ public class K9 extends Application {
 
         for (Class<?> clazz : classes) {
 
-            boolean alreadyEnabled = pm.getComponentEnabledSetting(new ComponentName(context, clazz)) ==
-                                     PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+            boolean alreadyEnabled = pm.getComponentEnabledSetting(
+                    new ComponentName(context, clazz)) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
 
             if (enabled != alreadyEnabled) {
-                pm.setComponentEnabledSetting(
-                    new ComponentName(context, clazz),
-                    enabled ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED :
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                    PackageManager.DONT_KILL_APP);
+                pm.setComponentEnabledSetting(new ComponentName(context, clazz),
+                        enabled ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                                : PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                        PackageManager.DONT_KILL_APP);
             }
         }
 
-        if (enabled && pm.getComponentEnabledSetting(new ComponentName(context, MailService.class)) ==
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
+        if (enabled && pm.getComponentEnabledSetting(
+                new ComponentName(context, MailService.class)) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
             /*
              * And now if accounts do exist then we've just enabled the service and we want to
              * schedule alarms for the new accounts.
@@ -520,6 +507,12 @@ public class K9 extends Application {
         fontSizes.save(editor);
     }
 
+
+    @Override
+	protected void attachBaseContext(Context base) {
+		super.attachBaseContext(LocaleHelper.onAttach(base, "bs"));
+	}
+
     @Override
     public void onCreate() {
         if (K9.DEVELOPER_MODE) {
@@ -533,11 +526,13 @@ public class K9 extends Application {
         Globals.setContext(this);
 
         K9MailLib.setDebugStatus(new K9MailLib.DebugStatus() {
-            @Override public boolean enabled() {
+            @Override
+            public boolean enabled() {
                 return DEBUG;
             }
 
-            @Override public boolean debugSensitive() {
+            @Override
+            public boolean debugSensitive() {
                 return DEBUG_SENSITIVE;
             }
         });
@@ -564,24 +559,25 @@ public class K9 extends Application {
 
         MessagingController.getInstance(this).addListener(new SimpleMessagingListener() {
             private void broadcastIntent(String action, Account account, String folder, Message message) {
-                Uri uri = Uri.parse("email://messages/" + account.getAccountNumber() + "/" + Uri.encode(folder) + "/" + Uri.encode(message.getUid()));
+                Uri uri = Uri.parse("email://messages/" + account.getAccountNumber() + "/" + Uri.encode(folder) + "/"
+                        + Uri.encode(message.getUid()));
                 Intent intent = new Intent(action, uri);
                 intent.putExtra(K9.Intents.EmailReceived.EXTRA_ACCOUNT, account.getDescription());
                 intent.putExtra(K9.Intents.EmailReceived.EXTRA_FOLDER, folder);
                 intent.putExtra(K9.Intents.EmailReceived.EXTRA_SENT_DATE, message.getSentDate());
                 intent.putExtra(K9.Intents.EmailReceived.EXTRA_FROM, Address.toString(message.getFrom()));
-                intent.putExtra(K9.Intents.EmailReceived.EXTRA_TO, Address.toString(message.getRecipients(Message.RecipientType.TO)));
-                intent.putExtra(K9.Intents.EmailReceived.EXTRA_CC, Address.toString(message.getRecipients(Message.RecipientType.CC)));
-                intent.putExtra(K9.Intents.EmailReceived.EXTRA_BCC, Address.toString(message.getRecipients(Message.RecipientType.BCC)));
+                intent.putExtra(K9.Intents.EmailReceived.EXTRA_TO,
+                        Address.toString(message.getRecipients(Message.RecipientType.TO)));
+                intent.putExtra(K9.Intents.EmailReceived.EXTRA_CC,
+                        Address.toString(message.getRecipients(Message.RecipientType.CC)));
+                intent.putExtra(K9.Intents.EmailReceived.EXTRA_BCC,
+                        Address.toString(message.getRecipients(Message.RecipientType.BCC)));
                 intent.putExtra(K9.Intents.EmailReceived.EXTRA_SUBJECT, message.getSubject());
                 intent.putExtra(K9.Intents.EmailReceived.EXTRA_FROM_SELF, account.isAnIdentity(message.getFrom()));
                 K9.this.sendBroadcast(intent);
 
-                Timber.d("Broadcasted: action=%s account=%s folder=%s message uid=%s",
-                        action,
-                        account.getDescription(),
-                        folder,
-                        message.getUid());
+                Timber.d("Broadcasted: action=%s account=%s folder=%s message uid=%s", action, account.getDescription(),
+                        folder, message.getUid());
             }
 
             private void updateUnreadWidget() {
@@ -626,8 +622,7 @@ public class K9 extends Application {
             }
 
             @Override
-            public void folderStatusChanged(Account account, String folderName,
-                    int unreadMessageCount) {
+            public void folderStatusChanged(Account account, String folderName, int unreadMessageCount) {
 
                 updateUnreadWidget();
                 updateMailListWidget();
@@ -739,8 +734,9 @@ public class K9 extends Application {
         if (notificationHideSubject == null) {
             // If the "notificationHideSubject" setting couldn't be found, the app was probably
             // updated. Look for the old "keyguardPrivacy" setting and map it to the new enum.
-            K9.notificationHideSubject = (storage.getBoolean("keyguardPrivacy", false)) ?
-                    NotificationHideSubject.WHEN_LOCKED : NotificationHideSubject.NEVER;
+            K9.notificationHideSubject = (storage.getBoolean("keyguardPrivacy", false))
+                    ? NotificationHideSubject.WHEN_LOCKED
+                    : NotificationHideSubject.NEVER;
         } else {
             K9.notificationHideSubject = NotificationHideSubject.valueOf(notificationHideSubject);
         }
@@ -751,8 +747,9 @@ public class K9 extends Application {
         }
 
         String lockScreenNotificationVisibility = storage.getString("lockScreenNotificationVisibility", null);
-        if(lockScreenNotificationVisibility != null) {
-            sLockScreenNotificationVisibility = LockScreenNotificationVisibility.valueOf(lockScreenNotificationVisibility);
+        if (lockScreenNotificationVisibility != null) {
+            sLockScreenNotificationVisibility = LockScreenNotificationVisibility
+                    .valueOf(lockScreenNotificationVisibility);
         }
 
         String splitViewMode = storage.getString("splitViewMode", null);
@@ -767,9 +764,8 @@ public class K9 extends Application {
         fontSizes.load(storage);
 
         try {
-            setBackgroundOps(BACKGROUND_OPS.valueOf(storage.getString(
-                    "backgroundOperations",
-                    BACKGROUND_OPS.WHEN_CHECKED_AUTO_SYNC.name())));
+            setBackgroundOps(BACKGROUND_OPS
+                    .valueOf(storage.getString("backgroundOperations", BACKGROUND_OPS.WHEN_CHECKED_AUTO_SYNC.name())));
         } catch (Exception e) {
             setBackgroundOps(BACKGROUND_OPS.WHEN_CHECKED_AUTO_SYNC);
         }
@@ -857,9 +853,7 @@ public class K9 extends Application {
      * settings.</p>
      */
     public enum Theme {
-        LIGHT,
-        DARK,
-        USE_GLOBAL
+        LIGHT, DARK, USE_GLOBAL
     }
 
     public static int getK9ThemeResourceId(Theme themeId) {
@@ -993,7 +987,6 @@ public class K9 extends Application {
         K9.quietTimeEnds = quietTimeEnds;
     }
 
-
     public static boolean isQuietTime() {
         if (!quietTimeEnabled) {
             return false;
@@ -1056,13 +1049,14 @@ public class K9 extends Application {
         return showCorrespondentNames;
     }
 
-     public static boolean messageListSenderAboveSubject() {
-         return messageListSenderAboveSubject;
-     }
+    public static boolean messageListSenderAboveSubject() {
+        return messageListSenderAboveSubject;
+    }
 
     public static void setMessageListSenderAboveSubject(boolean sender) {
-         messageListSenderAboveSubject = sender;
+        messageListSenderAboveSubject = sender;
     }
+
     public static void setShowCorrespondentNames(boolean showCorrespondentNames) {
         K9.showCorrespondentNames = showCorrespondentNames;
     }
@@ -1218,6 +1212,7 @@ public class K9 extends Application {
     public static boolean wrapFolderNames() {
         return wrapFolderNames;
     }
+
     public static void setWrapFolderNames(final boolean state) {
         wrapFolderNames = state;
     }
@@ -1225,6 +1220,7 @@ public class K9 extends Application {
     public static boolean hideUserAgent() {
         return hideUserAgent;
     }
+
     public static void setHideUserAgent(final boolean state) {
         hideUserAgent = state;
     }
@@ -1232,6 +1228,7 @@ public class K9 extends Application {
     public static boolean hideTimeZone() {
         return hideTimeZone;
     }
+
     public static void setHideTimeZone(final boolean state) {
         hideTimeZone = state;
     }
@@ -1430,7 +1427,7 @@ public class K9 extends Application {
     }
 
     public static void saveSettingsAsync() {
-        new AsyncTask<Void,Void,Void>() {
+        new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
                 Preferences prefs = Preferences.getPreferences(app);

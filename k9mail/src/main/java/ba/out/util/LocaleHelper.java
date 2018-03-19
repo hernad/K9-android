@@ -1,4 +1,4 @@
-package ba.out;
+package ba.out.util;
 
 import android.annotation.TargetApi;
 import android.content.Context;
