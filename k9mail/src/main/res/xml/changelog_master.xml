@@ -8,7 +8,7 @@
      They are automatically updated with "ant bump-version".
 -->
 <changelog>
-    <release version="5.501.h15" versioncode="25013">
+    <release version="5.501.h15" versioncode="25015">
         <change>merge upstream</change>
     </release>
     <release version="5.501" versioncode="25010">
